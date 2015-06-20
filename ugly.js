@@ -9,7 +9,9 @@ var WebSocketServer = require ('ws').Server;
 var VERSION         = pkg.version;
 var LOG_FILE        = 'ugly.log';
 var VIEWER_PORT     = 3333;
+var VIEWER_ADDR     = 'localhost:' + VIEWER_PORT;
 var SOCKET_PORT     = 4444;
+var SOCKET_ADDR     = 'ws://localhost:' + SOCKET_PORT;
 
 // Globals = ===================================================================
 var server = new WebSocketServer ({ port: SOCKET_PORT});
@@ -70,7 +72,7 @@ function serveViewer () {
 	app.use (express.static (__dirname + '/viewer'));
 	app.listen (VIEWER_PORT);
 
-	info ('Serving viewer at localhost:' + VIEWER_PORT);
+	info ('Serving viewer at ' + VIEWER_ADDR);
 }
 
 function connectToViewer (callback_) {
