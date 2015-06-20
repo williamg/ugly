@@ -208,7 +208,69 @@ function validateCanvasSize (line_) {
 function parseFrameCommand (line_) {
 	console.assert (typeof (line_) === 'string');
 
-	error ('Unrecognized frame command "' + line_ + '"');
+	if (startsWith ('fill_style_color', line_)) {
+		validateFillStyleColor (line_);
+	} else if (startsWith ('fill_rect', line_)) {
+		validateFillRect (line_);
+	} else {
+		error ('Unrecognized frame command "' + line_ + '"');
+	}
+}
+
+function validateFillStyleColor (line_) {
+	console.assert (typeof (line_) === 'string');
+
+	var commandArr = line_.match (/\S+/g);
+
+	if (commandArr.length !== 5)
+		error ('Invalid syntax. fill_style_color expects 4 parameters.');
+
+	var red = parseInt (commandArr[1]);
+	var green = parseInt (commandArr[2]);
+	var blue = parseInt (commandArr[3]);
+	var alpha = parseFloat (commandArr[4]);
+
+	if (isNaN (red) || red < 0 || red > 255)
+		error ('Invalid "red" parameter. Must be an integer between ' +
+		       '0 and 255. (given: ' + commandArr[1] + ')');
+
+	if (isNaN (green) || green < 0 || green > 255)
+		error ('Invalid "green" parameter. Must be an integer between ' +
+		       '0 and 255. (given: ' + commandArr[2] + ')');
+
+	if (isNaN (blue) || blue < 0 || blue > 255)
+		error ('Invalid "blue" parameter. Must be an integer between ' +
+		       '0 and 255. (given: ' + commandArr[3] + ')');
+
+	if (isNaN (alpha) || alpha < 0 || alpha > 1)
+		error ('Invalid "alpha" parameter. Must be a decimal between ' +
+		       '0 and 1. (given: ' + commandArr[4] + ')');
+}
+
+function validateFillRect (line_) {
+	console.assert (typeof (line_) === 'string');
+
+	var commandArr = line_.match (/\S+/g);
+
+	if (commandArr.length !== 5)
+			error ('Invalid syntax. fill_rect expects 4 parameters.');
+
+	var x = parseInt (commandArr[1]);
+	var y = parseInt (commandArr[2]);
+	var width = parseInt (commandArr[3]);
+	var height = parseInt (commandArr[4]);
+
+	if (isNaN (x))
+		error ('Invalid "x" parameter. Must be an integer');
+
+	if (isNaN (y))
+		error ('Invalid "y" parameter. Must be an integer');
+
+	if (isNaN (width))
+		error ('Invalid "width" parameter. Must be an integer');
+
+	if (isNaN (height))
+		error ('Invalid "height" parameter. Must be an integer');
 }
 
 // Handle receving a line as input

@@ -78,6 +78,29 @@ function canvasSize (command_) {
 	ugly.canvas.style.height = height;
 }
 
+function fillStyleColor (command_) {
+	var argList = toArgList (command_);
+
+	var red = parseInt (argList[1]);
+	var green = parseInt (argList[2]);
+	var blue = parseInt (argList[3]);
+	var alpha = parseFloat (argList[4]);
+
+	ugly.context.fillStyle = 'rgba(' + red + ',' + green + ',' +
+	                          blue + ',' + alpha + ')';
+}
+
+function fillRect (command_) {
+	var commandArr = toArgList (command_);
+
+	var x = parseInt (commandArr[1]);
+	var y = parseInt (commandArr[2]);
+	var width = parseInt (commandArr[3]);
+	var height = parseInt (commandArr[4]);
+
+	ugly.context.fillRect (x, y, width, height);
+}
+
 // Executes all the commands in the queue
 function processQueuedCommands () {
 	for (var i = 0; i < ugly.queuedCommands.length; i++) {
@@ -87,6 +110,10 @@ function processQueuedCommands () {
 			letterboxColor (command);
 		} else if (startsWith ('canvas_size', command)) {
 			canvasSize (command);
+		} else if (startsWith ('fill_style_color', command)) {
+			fillStyleColor (command);
+		} else if (startsWith ('fill_rect', command)) {
+			fillRect (command);
 		} else {
 			// Since we've already validated server-side, this should be
 			// unreachable code

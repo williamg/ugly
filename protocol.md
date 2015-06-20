@@ -1,5 +1,5 @@
 # Ugly Protocol
-####**v1.0.2**
+####**v1.0.3**
 
 ---
 
@@ -65,7 +65,17 @@ $END_CONFIG
         <tr>
             <th align="left">Command</th>
             <th align="left">Description</th>
-            <th align="left">Defaults</th>
+        </tr>
+        <tr>
+            <td><pre>fill_style_color r g b a</pre></td>
+            <td>Sets a color to be used as the fillStyle for the canvas.
+            RGB values should be integers from 0 to 255. Alpha should be a
+            decimal from 0-1.</td>
+        </tr>
+        <tr>
+            <td><pre>fill_rect x y width height</pre></td>
+            <td>Fill a rectangle with the top left corner at x y with the given
+            width and height.</td>
         </tr>
     </tbody>
 </table>
