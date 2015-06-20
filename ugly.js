@@ -52,7 +52,6 @@ function main () {
 	info ("Initializing...");
 
 	serveViewer ();
-	info ("Listening on stdin");
 	readlines (handleLine);
 }
 
@@ -68,6 +67,8 @@ function serveViewer () {
 // Listen on stdin and call callback_ on each line
 function readlines (callback_) {
 	console.assert (typeof (callback_) === 'function');
+
+	info ("Listening on stdin");
 
 	var unhandledText = '';
 
