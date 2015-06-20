@@ -15,7 +15,9 @@ var SOCKET_ADDR     = 'ws://localhost:' + SOCKET_PORT;
 
 // Globals = ===================================================================
 var server = new WebSocketServer ({ port: SOCKET_PORT});
-var socket = undefined;
+var socket;
+var currentChunk;
+var lineHandler;
 
 // Logging =====================================================================
 function initLog () {
@@ -112,14 +114,101 @@ function readlines (callback_) {
 	});
 }
 
-function handleLine (line_) {
-	console.assert (typeof (line_) === 'string');
+// Command parsing =============================================================
+function startsWith (prefix_, string_) {
+	console.assert (typeof (prefix_) === 'string');
+	console.assert (typeof (string_) === 'string');
 
-	socket.send (line_, function (err_) {
+	return string_.indexOf (prefix_) === 0;
+}
+
+function sendData (data_) {
+	console.assert (typeof (data_) === 'string');
+
+	socket.send (data_, function (err_) {
 		if (err_)
 			error (err_);
 	});
 }
 
-// GO!
+// Config validation functions -------------------------------------------------
+function validateLetterboxColor (line_) {
+	console.assert (typeof (line_) === 'string');
+	console.assert (startsWith ('letterbox_color', line_));
+
+	var commandArr = line_.match (/\S+/g);
+
+	if (commandArr.length !== 2)
+		error ('Invalid syntax. letterbox_color expects 1 parameter.');
+
+	var color = commandArr[1];
+
+	if (! color.match (/#[a-fA-F0-9]{6}/))
+		error ('Invalid syntax. letterbox_color expectx a parameter of ' +
+		       'the form #XXXXXX where XXXXXX is the hexadecimal ' +
+		       'representation of the desired color.');
+}
+
+function parseConfigCommand (line_) {
+	console.assert (typeof (line_) === 'string');
+
+	if (startsWith ('letterbox_color', line_)) {
+		validateLetterboxColor (line_);
+		return;
+	} else {
+		error ('Unrecognized config command "' + line_ + '"');
+	}
+}
+
+// Frame validation functions --------------------------------------------------
+function parseFrameCommand (line_) {
+	console.assert (typeof (line_) === 'string');
+
+	error ('Unrecognized frame command "' + line_ + '"');
+
+}
+
+function handleLine (line_) {
+	console.assert (typeof (line_) === 'string');
+
+	if (line_.length === 0)
+		return;
+
+	// TODO: This should be moved to a global so I don't recreate it each time
+	var chunkHandlers = {
+		'CONFIG': parseConfigCommand,
+		'FRAME': parseFrameCommand,
+	};
+
+	for (var chunkName in chunkHandlers) {
+		// Chunk declaration
+		if (startsWith ('$' + chunkName, line_)) {
+			if (currentChunk !== undefined)
+				error ('Found ' + chunkName + ' declaration before the ' +
+				       'previous chunk was terminated.');
+
+			currentChunk = chunkName;
+			lineHandler = chunkHandlers[chunkName];
+			break;
+		// Chunk termination
+		} else if (startsWith ('$END_' + chunkName, line_)) {
+			if (currentChunk !== chunkName)
+				error ('Found ' + chunkName + ' terminator in non-' +
+				       chunkName + ' chunk.');
+
+			lineHandler = undefined;
+			currentChunk = undefined;
+			break;
+		}
+	}
+
+	// Only handle commands, not declarations or terminations
+	if (! startsWith ('$', line_))
+			lineHandler (line_);
+
+	// We send everything, though
+	sendData (line_);
+}
+
+// Entry point =================================================================
 main ();
