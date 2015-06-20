@@ -6,10 +6,16 @@ var SOCKET_SERVER = 'ws://localhost:' + SOCKET_PORT;
 var ugly = {
 	currentChunk: undefined,
 	queuedCommands: [],
+	defaultConfig: [
+		'letterbox_color #000000',
+	],
 };
 
 // Main code ===================================================================
 function initConnection () {
+	ugly.queuedCommands = ugly.defaultConfig;
+	processQueuedCommands ();
+
 	console.log ('Attempting to connect to websocket server ' + SOCKET_SERVER);
 	var socket = new WebSocket (SOCKET_SERVER);
 
@@ -28,7 +34,7 @@ function initConnection () {
 // side. The exception is that since we've already gone through the server, we
 // can assume that anything we get is valid according to the protocol.
 
-// Returns true iff string_ begins with prefix_
+
 function startsWith (prefix_, string_) {
 	console.assert (typeof (prefix_) === 'string');
 	console.assert (typeof (string_) === 'string');
