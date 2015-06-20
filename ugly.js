@@ -11,13 +11,14 @@ var LOG_FILE        = 'ugly.log';
 var VIEWER_PORT     = 3333;
 var VIEWER_ADDR     = 'localhost:' + VIEWER_PORT;
 var SOCKET_PORT     = 4444;
-var SOCKET_ADDR     = 'ws://localhost:' + SOCKET_PORT;
 
 // Globals = ===================================================================
-var server = new WebSocketServer ({ port: SOCKET_PORT});
-var socket;
-var currentChunk;
-var lineHandler;
+var ugly = {
+	server: new WebSocketServer ({ port: SOCKET_PORT}),
+	socket: undefined,
+	currentChunk: undefined,
+	lineHandler: undefined,
+};
 
 // Logging =====================================================================
 function initLog () {
@@ -78,10 +79,10 @@ function serveViewer () {
 }
 
 function connectToViewer (callback_) {
-	server.on ('connection', function (socket_) {
+	ugly.server.on ('connection', function (socket_) {
 		info ('Viewer connected');
 
-		socket = socket_;
+		ugly.socket = socket_;
 		callback_ ();
 	});
 }
@@ -125,7 +126,7 @@ function startsWith (prefix_, string_) {
 function sendData (data_) {
 	console.assert (typeof (data_) === 'string');
 
-	socket.send (data_, function (err_) {
+	ugly.socket.send (data_, function (err_) {
 		if (err_)
 			error (err_);
 	});
@@ -183,28 +184,28 @@ function handleLine (line_) {
 	for (var chunkName in chunkHandlers) {
 		// Chunk declaration
 		if (startsWith ('$' + chunkName, line_)) {
-			if (currentChunk !== undefined)
+			if (ugly.currentChunk !== undefined)
 				error ('Found ' + chunkName + ' declaration before the ' +
 				       'previous chunk was terminated.');
 
-			currentChunk = chunkName;
-			lineHandler = chunkHandlers[chunkName];
+			ugly.currentChunk = chunkName;
+			ugly.lineHandler = chunkHandlers[chunkName];
 			break;
 		// Chunk termination
 		} else if (startsWith ('$END_' + chunkName, line_)) {
-			if (currentChunk !== chunkName)
+			if (ugly.currentChunk !== chunkName)
 				error ('Found ' + chunkName + ' terminator in non-' +
 				       chunkName + ' chunk.');
 
-			lineHandler = undefined;
-			currentChunk = undefined;
+			ugly.lineHandler = undefined;
+			ugly.currentChunk = undefined;
 			break;
 		}
 	}
 
 	// Only handle commands, not declarations or terminations
 	if (! startsWith ('$', line_))
-			lineHandler (line_);
+			ugly.lineHandler (line_);
 
 	// We send everything, though
 	sendData (line_);
