@@ -1,5 +1,5 @@
 # Ugly Protocol
-####**v1.0.1**
+####**v1.0.2**
 
 ---
 
@@ -50,6 +50,11 @@ $END_CONFIG
             <td><pre>letterbox_color #rrggbb</pre></td>
             <td> Sets the color for the portions of the page not covered by the canvas
             <td><pre>letterbox_color #000000</pre></td>
+        </tr>
+        <tr>
+            <td><pre>canvas_size width height</pre></td>
+            <td> Sets the size of the canvas in pixels
+            <td><pre>canvas_size 640 480</pre></td>
         </tr>
     </tbody>
 </table>

@@ -4,18 +4,27 @@ var SOCKET_SERVER = 'ws://localhost:' + SOCKET_PORT;
 
 // Globals =====================================================================
 var ugly = {
+	canvas: undefined,
+	context: undefined,
 	currentChunk: undefined,
 	queuedCommands: [],
 	defaultConfig: [
 		'letterbox_color #000000',
+		'canvas_size 640 480',
 	],
 };
 
 // Main code ===================================================================
-function initConnection () {
+function initCanvas () {
+	ugly.canvas = document.getElementById ('canvas');
+	ugly.context = ugly.canvas.getContext ('2d');
+
 	ugly.queuedCommands = ugly.defaultConfig;
 	processQueuedCommands ();
 
+}
+
+function initConnection () {
 	console.log ('Attempting to connect to websocket server ' + SOCKET_SERVER);
 	var socket = new WebSocket (SOCKET_SERVER);
 
@@ -57,14 +66,27 @@ function letterboxColor (command_) {
 	document.body.style.background = argList[1];
 }
 
+function canvasSize (command_) {
+	var argList = toArgList (command_);
+
+	var width = parseInt (argList[1]);
+	var height = parseInt (argList[2]);
+
+	ugly.canvas.width = width;
+	ugly.canvas.height = height;
+	ugly.canvas.style.width = width;
+	ugly.canvas.style.height = height;
+}
+
 // Executes all the commands in the queue
 function processQueuedCommands () {
 	for (var i = 0; i < ugly.queuedCommands.length; i++) {
 		var command = ugly.queuedCommands[i];
-		console.log (command);
 
 		if (startsWith ('letterbox_color', command)) {
 			letterboxColor (command);
+		} else if (startsWith ('canvas_size', command)) {
+			canvasSize (command);
 		} else {
 			// Since we've already validated server-side, this should be
 			// unreachable code
@@ -94,5 +116,6 @@ function handleLine (line_) {
 
 // Entry point =================================================================
 (function () {
+	initCanvas ();
 	initConnection ();
 }) ();

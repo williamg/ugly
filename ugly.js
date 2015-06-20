@@ -147,6 +147,20 @@ function sendData (data_) {
 
 // Config validation functions -------------------------------------------------
 
+// Parse commands in a CONFIG chunk
+function parseConfigCommand (line_) {
+	console.assert (typeof (line_) === 'string');
+
+	if (startsWith ('letterbox_color', line_)) {
+		validateLetterboxColor (line_);
+		return;
+	} else if (startsWith ('canvas_size', line_)) {
+		validateCanvasSize (line_);
+		return;
+	} else {
+		error ('Unrecognized config command "' + line_ + '"');
+	}
+}
 // Validate a letterbox_color command according to the protocol
 function validateLetterboxColor (line_) {
 	console.assert (typeof (line_) === 'string');
@@ -165,17 +179,28 @@ function validateLetterboxColor (line_) {
 		       'representation of the desired color.');
 }
 
-// Parse commands in a CONFIG chunk
-function parseConfigCommand (line_) {
+// Validate a canvas_size command according to the protocol
+function validateCanvasSize (line_) {
 	console.assert (typeof (line_) === 'string');
+	console.assert (startsWith ('canvas_size', line_));
 
-	if (startsWith ('letterbox_color', line_)) {
-		validateLetterboxColor (line_);
-		return;
-	} else {
-		error ('Unrecognized config command "' + line_ + '"');
-	}
+	var commandArr = line_.match (/\S+/g);
+
+	if (commandArr.length !== 3)
+		error ('Invalid syntax. canvas_size expects 2 parameter.');
+
+	var width = commandArr[1];
+	var height = commandArr[2];
+
+	if (! width.match (/[0-9]+/))
+		error ('Invalid syntax. canvas_size expects a integral ' +
+		       'width parameter');
+
+	if (! height.match (/[0-9]+/))
+		error ('Invalid syntax. canvas_size expects a integral ' +
+		       'height parameter');
 }
+
 
 // Frame validation functions --------------------------------------------------
 
