@@ -11,6 +11,10 @@ var LOG_FILE        = 'ugly.log';
 var VIEWER_PORT     = 3333;
 var VIEWER_ADDR     = 'localhost:' + VIEWER_PORT;
 var SOCKET_PORT     = 4444;
+var CHUNK_HANDLERS = {
+	'CONFIG': parseConfigCommand,
+	'FRAME': parseFrameCommand,
+	};
 
 // Globals =====================================================================
 var ugly = {
@@ -189,13 +193,7 @@ function handleLine (line_) {
 	if (line_.length === 0)
 		return;
 
-	// TODO: This should be moved to a global so I don't recreate it each time
-	var chunkHandlers = {
-		'CONFIG': parseConfigCommand,
-		'FRAME': parseFrameCommand,
-	};
-
-	for (var chunkName in chunkHandlers) {
+	for (var chunkName in CHUNK_HANDLERS) {
 		// Chunk declaration
 		if (startsWith ('$' + chunkName, line_)) {
 			if (ugly.currentChunk !== undefined)
@@ -203,7 +201,7 @@ function handleLine (line_) {
 				       'previous chunk was terminated.');
 
 			ugly.currentChunk = chunkName;
-			ugly.lineHandler = chunkHandlers[chunkName];
+			ugly.lineHandler = CHUNK_HANDLERS[chunkName];
 			break;
 		// Chunk termination
 		} else if (startsWith ('$END_' + chunkName, line_)) {
