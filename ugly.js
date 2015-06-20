@@ -1,10 +1,13 @@
 // Requires ====================================================================
 var pkg = require ('./package.json');
 var fs = require ('fs');
+var express = require ('express');
+
 
 // Constants ===================================================================
 var VERSION         = pkg.version;
 var LOG_FILE        = 'ugly.log';
+var PORT            = 3333;
 
 // Logging =====================================================================
 function initLog () {
@@ -47,8 +50,19 @@ function error (msg_) {
 function main () {
 	initLog ();
 	info ("Initializing...");
+
+	serveViewer ();
 	info ("Listening on stdin");
 	readlines (handleLine);
+}
+
+function serveViewer () {
+	var app = express ();
+
+	app.use (express.static (__dirname + '/viewer'));
+	app.listen (PORT);
+
+	info ('Serving viewer at localhost:' + PORT);
 }
 
 // Listen on stdin and call callback_ on each line
