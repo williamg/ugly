@@ -12,7 +12,7 @@ var VIEWER_PORT     = 3333;
 var VIEWER_ADDR     = 'localhost:' + VIEWER_PORT;
 var SOCKET_PORT     = 4444;
 
-// Globals = ===================================================================
+// Globals =====================================================================
 var ugly = {
 	server: new WebSocketServer ({ port: SOCKET_PORT}),
 	socket: undefined,
@@ -31,10 +31,12 @@ function initLog () {
 	writeToFile ('===========================================================');
 }
 
+// Write to the loge file
 function writeToFile (msg_) {
 	fs.appendFileSync (LOG_FILE, msg_ + '\n');
 }
 
+// Print an info (non-fatal) message to the console and the log file
 function info (msg_) {
 	var time = new Date ().getTime ();
 
@@ -44,6 +46,8 @@ function info (msg_) {
 	writeToFile (msg_);
 }
 
+// Print an error (fatal) message to the consol and the log file and then kill
+// the program
 function error (msg_) {
 	var time = new Date ().getTime ();
 
@@ -69,6 +73,7 @@ function main () {
 	});
 }
 
+// Serve the static viewer
 function serveViewer () {
 	var app = express ();
 
@@ -78,6 +83,7 @@ function serveViewer () {
 	info ('Serving viewer at ' + VIEWER_ADDR);
 }
 
+// Attempt to establish a WebSocket connection the the viewer
 function connectToViewer (callback_) {
 	ugly.server.on ('connection', function (socket_) {
 		info ('Viewer connected');
@@ -116,6 +122,8 @@ function readlines (callback_) {
 }
 
 // Command parsing =============================================================
+
+// Returns true iff string_ starts with prefix_
 function startsWith (prefix_, string_) {
 	console.assert (typeof (prefix_) === 'string');
 	console.assert (typeof (string_) === 'string');
@@ -123,6 +131,7 @@ function startsWith (prefix_, string_) {
 	return string_.indexOf (prefix_) === 0;
 }
 
+// Write data_ to the client via websockets
 function sendData (data_) {
 	console.assert (typeof (data_) === 'string');
 
@@ -133,6 +142,8 @@ function sendData (data_) {
 }
 
 // Config validation functions -------------------------------------------------
+
+// Validate a letterbox_color command according to the protocol
 function validateLetterboxColor (line_) {
 	console.assert (typeof (line_) === 'string');
 	console.assert (startsWith ('letterbox_color', line_));
@@ -145,11 +156,12 @@ function validateLetterboxColor (line_) {
 	var color = commandArr[1];
 
 	if (! color.match (/#[a-fA-F0-9]{6}/))
-		error ('Invalid syntax. letterbox_color expectx a parameter of ' +
+		error ('Invalid syntax. letterbox_color expects a parameter of ' +
 		       'the form #XXXXXX where XXXXXX is the hexadecimal ' +
 		       'representation of the desired color.');
 }
 
+// Parse commands in a CONFIG chunk
 function parseConfigCommand (line_) {
 	console.assert (typeof (line_) === 'string');
 
@@ -162,13 +174,15 @@ function parseConfigCommand (line_) {
 }
 
 // Frame validation functions --------------------------------------------------
+
+// Parse commands in a FRAME chunk
 function parseFrameCommand (line_) {
 	console.assert (typeof (line_) === 'string');
 
 	error ('Unrecognized frame command "' + line_ + '"');
-
 }
 
+// Handle receving a line as input
 function handleLine (line_) {
 	console.assert (typeof (line_) === 'string');
 
