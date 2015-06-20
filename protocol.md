@@ -28,12 +28,14 @@ new line.
 
 **Example**:
 
-    $CONFIG
-    command_baz param param
-    command_foo
-    command_bar param
-    $END_CONFIG
-    
+```
+$CONFIG
+command_baz param param
+command_foo
+command_bar param
+$END_CONFIG
+```
+
 ## Commands
 ### Config Commands
 
@@ -45,9 +47,9 @@ new line.
             <th align="left">Defaults</th>
         </tr>
         <tr>
-            <td>`letterbox_color #rrggbb`</td>
+            <td><pre>letterbox_color #rrggbb</pre></td>
             <td> Sets the color for the portions of the page not covered by the canvas
-            <td>`letterbox_color #000000`</td>
+            <td><pre>letterbox_color #000000</pre></td>
         </tr>
     </tbody>
 </table>
