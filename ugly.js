@@ -2,12 +2,18 @@
 var pkg = require ('./package.json');
 var fs = require ('fs');
 var express = require ('express');
+var WebSocketServer = require ('ws').Server;
 
 
 // Constants ===================================================================
 var VERSION         = pkg.version;
 var LOG_FILE        = 'ugly.log';
-var PORT            = 3333;
+var VIEWER_PORT     = 3333;
+var SOCKET_PORT     = 4444;
+
+// Globals = ===================================================================
+var server = new WebSocketServer ({ port: SOCKET_PORT});
+var socket = undefined;
 
 // Logging =====================================================================
 function initLog () {
@@ -52,16 +58,28 @@ function main () {
 	info ("Initializing...");
 
 	serveViewer ();
-	readlines (handleLine);
+
+	connectToViewer (function () {
+		readlines (handleLine);
+	});
 }
 
 function serveViewer () {
 	var app = express ();
 
 	app.use (express.static (__dirname + '/viewer'));
-	app.listen (PORT);
+	app.listen (VIEWER_PORT);
 
-	info ('Serving viewer at localhost:' + PORT);
+	info ('Serving viewer at localhost:' + VIEWER_PORT);
+}
+
+function connectToViewer (callback_) {
+	server.on ('connection', function (socket_) {
+		info ('Viewer connected');
+
+		socket = socket_;
+		callback_ ();
+	});
 }
 
 // Listen on stdin and call callback_ on each line
@@ -95,7 +113,10 @@ function readlines (callback_) {
 function handleLine (line_) {
 	console.assert (typeof (line_) === 'string');
 
-	// TODO: Handle the line
+	socket.send (line_, function (err_) {
+		if (err_)
+			error (err_);
+	});
 }
 
 // GO!
