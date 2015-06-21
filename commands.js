@@ -13,6 +13,12 @@ var paramTypes = {
 
 			return 'Unsigned parameter invalid: ' + val;
 		},
+		value: function (argList_) {
+			return {
+				value: parseInt (argList_[0]),
+				remaining: argList_.splice (1)
+			};
+		}
 	},
 	INT: {
 		name: 'int',
@@ -27,6 +33,12 @@ var paramTypes = {
 
 			return 'Int parameter invalid: ' + val;
 		},
+		value: function (argList_) {
+			return {
+				value: parseInt (argList_[0]),
+				remaining: argList_.splice (1)
+			};
+		}
 	},
 	FLOAT: {
 		name: 'float',
@@ -41,6 +53,12 @@ var paramTypes = {
 
 			return 'Float parameter invalid: ' + val;
 		},
+		value: function (argList_) {
+			return {
+				value: parseFloat (argList_[0]),
+				remaining: argList_.splice (1)
+			};
+		}
 	},
 	RGB_COLOR: {
 		name: 'rgb color',
@@ -63,6 +81,16 @@ var paramTypes = {
 
 			return colorList_.splice (3);
 		},
+		value: function (colorList_) {
+			var red = parseInt (colorList_[0]);
+			var green = parseInt (colorList_[1]);
+			var blue = parseInt (colorList_[2]);
+
+			return {
+				value: 'rgb(' + red + ',' + green + ',' + blue + ')',
+				reminaing: colorList_.splice(3)
+			};
+		}
 	},
 	RGBA_COLOR: {
 		name: 'rgba color',
@@ -89,67 +117,107 @@ var paramTypes = {
 
 			return colorList_.splice (4);
 		},
+		value: function (colorList_) {
+			var red = parseInt (colorList_[0]);
+			var green = parseInt (colorList_[1]);
+			var blue = parseInt (colorList_[2]);
+			var alpha = parseFloat (colorList_[3]);
+
+			return {
+				value: 'rgba(' + red + ',' + green + ',' + blue + ',' +
+				       alpha + ')',
+				reminaing: colorList_.splice(4)
+			};
+		}
 	},
 };
 
 // Command definitions =========================================================
+var commandTypes = {
+	PROPERTY: 'property',
+	METHOD: 'method',
+};
+
+function param (name_, type_) {
+	return {name: name_, type: type_};
+}
+
 var configCommands = {
 	letterbox_color: {
-		params: {
-			color: paramTypes.RGB_COLOR,
-		}
+		params: [
+			param ('color', paramTypes.RGB_COLOR)
+		]
 	},
 	canvas_size: {
-		name: 'canvas_size',
-		params: {
-			width: paramTypes.INT,
-			height: paramTypes.INT,
-		}
+		params: [
+			param ('width', paramTypes.INT),
+			param ('height', paramTypes.INT)
+		]
 	},
 };
 
 var  frameCommands = {
 	fill_style_color: {
-		params: {
-			color: paramTypes.RGBA_COLOR,
-		}
+		name: 'fillStyle',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('color', paramTypes.RGBA_COLOR)
+		]
 	},
 	fill_rect: {
-		params: {
-			x: paramTypes.INT,
-			y: paramTypes.INT,
-			width: paramTypes.INT,
-			height: paramTypes.INT,
-		}
+		name: 'fillRect',
+		type: commandTypes.METHOD,
+		params: [
+			param ('x', paramTypes.INT),
+			param ('y', paramTypes.INT),
+			param ('width', paramTypes.INT),
+			param ('height', paramTypes.INT)
+		]
 	},
 	shadow_blur: {
-		params: {
-			blur: paramTypes.UNSIGNED
-		}
+		name: 'shadowBlur',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('blur', paramTypes.UNSIGNED)
+		]
 	},
 	shadow_color: {
-		params: {
-			colors: paramTypes.RGBA_COLOR,
-		}
+		name: 'shadowColor',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('color', paramTypes.RGBA_COLOR)
+		]
 	},
 	shadow_offset_x: {
-		params: {
-			xOffset: paramTypes.INT
-		}
+		name: 'shadowOffsetX',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('xOffset', paramTypes.INT)
+		]
 	},
 	shadow_offset_y: {
-		params: {
-			yOffset: paramTypes.INT
-		},
+		name: 'shadowOffsetY',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('yOffset', paramTypes.INT)
+		]
 	},
 	stroke_style_color: {
-		params: {
-			color: paramTypes.RGBA_COLOR,
-		}
+		name: 'strokeStyle',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('color', paramTypes.RGBA_COLOR)
+		]
 	},
 };
 
-module.exports = {
+var commands = {
 	configCommands: configCommands,
-	frameCommands: frameCommands,
+	frameCommands: frameCommands
 };
+
+if (typeof module !== 'undefined' && module.exports) {
+	module.exports = commands;
+} else {
+	window.commands = commands;
+}
