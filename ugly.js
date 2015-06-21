@@ -1,6 +1,6 @@
 // Requires ====================================================================
 var pkg = require ('./package.json');
-var fs = require ('fs');
+var log = require ('./logging.js');
 var express = require ('express');
 var WebSocketServer = require ('ws').Server;
 
@@ -24,51 +24,13 @@ var ugly = {
 	lineHandler: undefined,
 };
 
-// Logging =====================================================================
-function initLog () {
-	// Clear the log
-	fs.writeFileSync (LOG_FILE, "");
-
-	// Write header data
-	writeToFile ('Created with ugly v' + VERSION);
-	writeToFile ('Start date: ' + (new Date ().toString ()));
-	writeToFile ('===========================================================');
-}
-
-// Write to the loge file
-function writeToFile (msg_) {
-	fs.appendFileSync (LOG_FILE, msg_ + '\n');
-}
-
-// Print an info (non-fatal) message to the console and the log file
-function info (msg_) {
-	var time = new Date ().getTime ();
-
-	msg_ = '[' + time + '] INFO: ' + msg_;
-
-	console.log (msg_);
-	writeToFile (msg_);
-}
-
-// Print an error (fatal) message to the consol and the log file and then kill
-// the program
-function error (msg_) {
-	var time = new Date ().getTime ();
-
-	msg_ = '[' + time + '] ERROR: ' + msg_;
-
-	console.error (msg_);
-	writeToFile (msg_);
-	process.exit (1);
-}
-
 
 // Main code ==================================================================
 
 // Start listening on stdin
 function main () {
-	initLog ();
-	info ("Initializing...");
+	log.initLog (LOG_FILE, VERSION);
+	log.info ("Initializing...");
 
 	serveViewer ();
 
@@ -84,13 +46,13 @@ function serveViewer () {
 	app.use (express.static (__dirname + '/viewer'));
 	app.listen (VIEWER_PORT);
 
-	info ('Serving viewer at ' + VIEWER_ADDR);
+	log.info ('Serving viewer at ' + VIEWER_ADDR);
 }
 
 // Attempt to establish a WebSocket connection the the viewer
 function connectToViewer (callback_) {
 	ugly.server.on ('connection', function (socket_) {
-		info ('Viewer connected');
+		log.info ('Viewer connected');
 
 		ugly.socket = socket_;
 		callback_ ();
@@ -101,7 +63,7 @@ function connectToViewer (callback_) {
 function readlines (callback_) {
 	console.assert (typeof (callback_) === 'function');
 
-	info ("Listening on stdin");
+	log.info ("Listening on stdin");
 
 	var unhandledText = '';
 
@@ -141,7 +103,7 @@ function sendData (data_) {
 
 	ugly.socket.send (data_, function (err_) {
 		if (err_)
-			error (err_);
+			log.error (err_);
 	});
 }
 
@@ -158,7 +120,7 @@ function parseConfigCommand (line_) {
 		validateCanvasSize (line_);
 		return;
 	} else {
-		error ('Unrecognized config command "' + line_ + '"');
+		log.error ('Unrecognized config command "' + line_ + '"');
 	}
 }
 // Validate a letterbox_color command according to the protocol
@@ -169,12 +131,12 @@ function validateLetterboxColor (line_) {
 	var commandArr = line_.match (/\S+/g);
 
 	if (commandArr.length !== 2)
-		error ('Invalid syntax. letterbox_color expects 1 parameter.');
+		log.error ('Invalid syntax. letterbox_color expects 1 parameter.');
 
 	var color = commandArr[1];
 
 	if (! color.match (/#[a-fA-F0-9]{6}/))
-		error ('Invalid syntax. letterbox_color expects a parameter of ' +
+		log.error ('Invalid syntax. letterbox_color expects a parameter of ' +
 		       'the form #XXXXXX where XXXXXX is the hexadecimal ' +
 		       'representation of the desired color.');
 }
@@ -187,17 +149,17 @@ function validateCanvasSize (line_) {
 	var commandArr = line_.match (/\S+/g);
 
 	if (commandArr.length !== 3)
-		error ('Invalid syntax. canvas_size expects 2 parameter.');
+		log.error ('Invalid syntax. canvas_size expects 2 parameter.');
 
 	var width = commandArr[1];
 	var height = commandArr[2];
 
 	if (! width.match (/[0-9]+/))
-		error ('Invalid syntax. canvas_size expects a integral ' +
+		log.error ('Invalid syntax. canvas_size expects a integral ' +
 		       'width parameter');
 
 	if (! height.match (/[0-9]+/))
-		error ('Invalid syntax. canvas_size expects a integral ' +
+		log.error ('Invalid syntax. canvas_size expects a integral ' +
 		       'height parameter');
 }
 
@@ -213,7 +175,7 @@ function parseFrameCommand (line_) {
 	} else if (startsWith ('fill_rect', line_)) {
 		validateFillRect (line_);
 	} else {
-		error ('Unrecognized frame command "' + line_ + '"');
+		log.error ('Unrecognized frame command "' + line_ + '"');
 	}
 }
 
@@ -223,7 +185,7 @@ function validateFillStyleColor (line_) {
 	var commandArr = line_.match (/\S+/g);
 
 	if (commandArr.length !== 5)
-		error ('Invalid syntax. fill_style_color expects 4 parameters.');
+		log.error ('Invalid syntax. fill_style_color expects 4 parameters.');
 
 	var red = parseInt (commandArr[1]);
 	var green = parseInt (commandArr[2]);
@@ -231,19 +193,19 @@ function validateFillStyleColor (line_) {
 	var alpha = parseFloat (commandArr[4]);
 
 	if (isNaN (red) || red < 0 || red > 255)
-		error ('Invalid "red" parameter. Must be an integer between ' +
+		log.error ('Invalid "red" parameter. Must be an integer between ' +
 		       '0 and 255. (given: ' + commandArr[1] + ')');
 
 	if (isNaN (green) || green < 0 || green > 255)
-		error ('Invalid "green" parameter. Must be an integer between ' +
+		log.error ('Invalid "green" parameter. Must be an integer between ' +
 		       '0 and 255. (given: ' + commandArr[2] + ')');
 
 	if (isNaN (blue) || blue < 0 || blue > 255)
-		error ('Invalid "blue" parameter. Must be an integer between ' +
+		log.error ('Invalid "blue" parameter. Must be an integer between ' +
 		       '0 and 255. (given: ' + commandArr[3] + ')');
 
 	if (isNaN (alpha) || alpha < 0 || alpha > 1)
-		error ('Invalid "alpha" parameter. Must be a decimal between ' +
+		log.error ('Invalid "alpha" parameter. Must be a decimal between ' +
 		       '0 and 1. (given: ' + commandArr[4] + ')');
 }
 
@@ -253,7 +215,7 @@ function validateFillRect (line_) {
 	var commandArr = line_.match (/\S+/g);
 
 	if (commandArr.length !== 5)
-			error ('Invalid syntax. fill_rect expects 4 parameters.');
+			log.error ('Invalid syntax. fill_rect expects 4 parameters.');
 
 	var x = parseInt (commandArr[1]);
 	var y = parseInt (commandArr[2]);
@@ -261,16 +223,16 @@ function validateFillRect (line_) {
 	var height = parseInt (commandArr[4]);
 
 	if (isNaN (x))
-		error ('Invalid "x" parameter. Must be an integer');
+		log.error ('Invalid "x" parameter. Must be an integer');
 
 	if (isNaN (y))
-		error ('Invalid "y" parameter. Must be an integer');
+		log.error ('Invalid "y" parameter. Must be an integer');
 
 	if (isNaN (width))
-		error ('Invalid "width" parameter. Must be an integer');
+		log.error ('Invalid "width" parameter. Must be an integer');
 
 	if (isNaN (height))
-		error ('Invalid "height" parameter. Must be an integer');
+		log.error ('Invalid "height" parameter. Must be an integer');
 }
 
 // Handle receving a line as input
@@ -284,8 +246,8 @@ function handleLine (line_) {
 		// Chunk declaration
 		if (startsWith ('$' + chunkName, line_)) {
 			if (ugly.currentChunk !== undefined)
-				error ('Found ' + chunkName + ' declaration before the ' +
-				       'previous chunk was terminated.');
+				log.error ('Found ' + chunkName + ' declaration before the ' +
+				           'previous chunk was terminated.');
 
 			ugly.currentChunk = chunkName;
 			ugly.lineHandler = CHUNK_HANDLERS[chunkName];
@@ -293,8 +255,8 @@ function handleLine (line_) {
 		// Chunk termination
 		} else if (startsWith ('$END_' + chunkName, line_)) {
 			if (ugly.currentChunk !== chunkName)
-				error ('Found ' + chunkName + ' terminator in non-' +
-				       chunkName + ' chunk.');
+				log.error ('Found ' + chunkName + ' terminator in non-' +
+				           chunkName + ' chunk.');
 
 			ugly.lineHandler = undefined;
 			ugly.currentChunk = undefined;
