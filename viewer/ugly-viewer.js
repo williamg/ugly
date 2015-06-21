@@ -9,7 +9,7 @@ var ugly = {
 	currentChunk: undefined,
 	queuedCommands: [],
 	defaultConfig: [
-		'letterbox_color #000000',
+		'letterbox_color 0 0 0',
 		'canvas_size 640 480',
 	],
 };
@@ -43,7 +43,6 @@ function initConnection () {
 // side. The exception is that since we've already gone through the server, we
 // can assume that anything we get is valid according to the protocol.
 
-
 function startsWith (prefix_, string_) {
 	console.assert (typeof (prefix_) === 'string');
 	console.assert (typeof (string_) === 'string');
@@ -63,7 +62,12 @@ function toArgList (line_) {
 function letterboxColor (command_) {
 	var argList = toArgList (command_);
 
-	document.body.style.background = argList[1];
+	var red = argList[1];
+	var green = argList[2];
+	var blue = argList[3];
+
+	document.body.style.background = 'rgb(' + red + ',' + green + ',' +
+	                                 blue + ')';
 }
 
 function canvasSize (command_) {
