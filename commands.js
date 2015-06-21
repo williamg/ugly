@@ -138,6 +138,8 @@ function validateCommand (line_, chunkName_, chunkCommands_) {
 		}
 	}
 
+	if (paramList.length !== 0)
+		log.error ('Extraneous parameters: ' + line_);
 }
 
 module.exports = {
