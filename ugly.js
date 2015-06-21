@@ -13,9 +13,13 @@ var VIEWER_PORT     = 3333;
 var VIEWER_ADDR     = 'localhost:' + VIEWER_PORT;
 var SOCKET_PORT     = 4444;
 var CHUNK_HANDLERS = {
-	'CONFIG': commands.validateConfigCommand,
-	'FRAME': commands.validateFrameCommand,
-	};
+	'CONFIG': function (line_) {
+		validateCommand (line_, 'CONFIG', commands.configCommands);
+	},
+	'FRAME': function (line_) {
+		validateCommand (line_, 'FRAME', commands.frameCommands);
+	}
+};
 
 // Globals =====================================================================
 var ugly = {
@@ -92,8 +96,6 @@ function readlines (callback_) {
 	});
 }
 
-// Command parsing =============================================================
-
 // Returns true iff string_ starts with prefix_
 function startsWith (prefix_, string_) {
 	console.assert (typeof (prefix_) === 'string');
@@ -157,9 +159,37 @@ function handleLine (line_) {
 
 	// We send everything, though
 	sendData (line_);
-
-
 }
+
+// Takes the given line and validates that it matches one of the commands in
+// chunkCommands_
+function validateCommand (line_, chunkName_, chunkCommands_) {
+	var argList = line_.match (/\S+/g);
+
+	var command = chunkCommands_[argList[0]];
+
+	if (command === undefined)
+		log.error ('Unknown ' + chunkName_ + ' command "' + argList[0] + '"');
+
+	var paramList = argList.slice (1);
+
+	for (var paramName in command.params) {
+		var paramType = command.params[paramName];
+		var result = paramType.validate (paramList);
+
+		if (typeof (result) === 'string') {
+			log.error ('Error processing param "' + paramName + '" in '+
+			           'command "' + argList[0] + '": ' + result);
+		} else {
+			console.assert (result.constructor === Array);
+			paramList = result;
+		}
+	}
+
+	if (paramList.length !== 0)
+		log.error ('Extraneous parameters: ' + line_);
+}
+
 
 // Entry point =================================================================
 main ();

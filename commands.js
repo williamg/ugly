@@ -1,5 +1,3 @@
-var log = require ('./logging.js');
-
 // Parameter validation ========================================================
 var paramTypes = {
 	UNSIGNED: {
@@ -94,7 +92,6 @@ var paramTypes = {
 	},
 };
 
-
 // Command definitions =========================================================
 var configCommands = {
 	letterbox_color: {
@@ -152,40 +149,7 @@ var  frameCommands = {
 	},
 };
 
-
-// Command validation ==========================================================
-function validateCommand (line_, chunkName_, chunkCommands_) {
-	var argList = line_.match (/\S+/g);
-
-	var command = chunkCommands_[argList[0]];
-
-	if (command === undefined)
-		log.error ('Unknown ' + chunkName_ + ' command "' + argList[0] + '"');
-
-	var paramList = argList.slice (1);
-
-	for (var paramName in command.params) {
-		var paramType = command.params[paramName];
-		var result = paramType.validate (paramList);
-
-		if (typeof (result) === 'string') {
-			log.error ('Error processing param "' + paramName + '" in '+
-			           'command "' + argList[0] + '": ' + result);
-		} else {
-			console.assert (result.constructor === Array);
-			paramList = result;
-		}
-	}
-
-	if (paramList.length !== 0)
-		log.error ('Extraneous parameters: ' + line_);
-}
-
 module.exports = {
-	validateConfigCommand: function (line_) {
-		validateCommand (line_, 'CONFIG', configCommands);
-	},
-	validateFrameCommand: function (line_) {
-		validateCommand (line_, 'FRAME', frameCommands);
-	}
+	configCommands: configCommands,
+	frameCommands: frameCommands,
 };
