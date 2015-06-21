@@ -1,5 +1,5 @@
 # Ugly Protocol
-####**v1.0.4**
+####**v1.0.5**
 
 ---
 
@@ -74,8 +74,29 @@ $END_CONFIG
         </tr>
         <tr>
             <td><pre>fill_rect x y width height</pre></td>
-            <td>Fill a rectangle with the top left corner at x y with the given
-            width and height.</td>
+            <td>Fill a rectangle with the top left corner at <pre>(x,y)</pre>
+            with the given <pre>width</pre> and <pre>height</pre>.</td>
+        </tr>
+        <tr>
+            <td><pre>shadow_color r g b a</pre></td>
+            <td>Sets a color to be used as the shadowColor for the canvas.
+            RGB values should be integers from 0 to 255. Alpha should be a
+            decimal from 0-1.</td>
+        </tr>
+        <tr>
+            <td><pre>shadow_blur blur</pre></td>
+            <td>Sets the shadowBlur property. <pre>blur</pre> should be a
+            positive integer.</td>
+        </tr>
+        <tr>
+            <td><pre>shadow_offset_x xOffset</pre></td>
+            <td>Sets the shadowOffsetX property. <pre>xOffset</pre> should be
+            an integer.</td>
+        </tr>
+        <tr>
+            <td><pre>shadow_offset_y yOffset</pre></td>
+            <td>Sets the shadowOffsetY property. <pre>yOffset</pre> should be
+            an integer.</td>
         </tr>
     </tbody>
 </table>

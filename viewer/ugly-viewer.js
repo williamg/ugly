@@ -98,14 +98,56 @@ function fillStyleColor (command_) {
 }
 
 function fillRect (command_) {
-	var commandArr = toArgList (command_);
+	var argList = toArgList (command_);
 
-	var x = parseInt (commandArr[1]);
-	var y = parseInt (commandArr[2]);
-	var width = parseInt (commandArr[3]);
-	var height = parseInt (commandArr[4]);
+	var x = parseInt (argList[1]);
+	var y = parseInt (argList[2]);
+	var width = parseInt (argList[3]);
+	var height = parseInt (argList[4]);
 
 	ugly.context.fillRect (x, y, width, height);
+}
+
+function strokeStyleColor (command_) {
+	var argList = toArgList (command_);
+
+	var red = parseInt (argList[1]);
+	var green = parseInt (argList[2]);
+	var blue = parseInt (argList[3]);
+	var alpha = parseFloat (argList[4]);
+
+	ugly.context.strokeStyle = 'rgba(' + red + ',' + green + ',' +
+	                           blue + ',' + alpha + ')';
+}
+
+function shadowColor (command_) {
+	var argList = toArgList (command_);
+
+	var red = parseInt (argList[1]);
+	var green = parseInt (argList[2]);
+	var blue = parseInt (argList[3]);
+	var alpha = parseFloat (argList[4]);
+
+	ugly.context.shadowColor = 'rgba(' + red + ',' + green + ',' +
+	                           blue + ',' + alpha + ')';
+}
+
+function shadowBlur (command_) {
+	var argList = toArgList (command_);
+
+	ugly.context.shadowBlur = parseInt (argList[1]);
+}
+
+function shadowOffsetX (command_) {
+	var argList = toArgList (command_);
+
+	ugly.context.shadowOffsetX = parseInt (argList[1]);
+}
+
+function shadowOffsetY (command_) {
+	var argList = toArgList (command_);
+
+	ugly.context.shadowOffsetY = parseInt (argList[1]);
 }
 
 // Executes all the commands in the queue
@@ -121,6 +163,16 @@ function processQueuedCommands () {
 			fillStyleColor (command);
 		} else if (startsWith ('fill_rect', command)) {
 			fillRect (command);
+		} else if (startsWith ('shadow_color', command)) {
+			shadowColor (command);
+		} else if (startsWith ('shadow_blur', command)) {
+			shadowBlur (command);
+		} else if (startsWith ('shadow_offset_x', command)) {
+			shadowOffsetX (command);
+		} else if (startsWith ('shadow_offset_y', command)) {
+			shadowOffsetY (command);
+		} else if (startsWith ('stroke_style_color', command)) {
+			strokeStyleColor (command);
 		} else {
 			// Since we've already validated server-side, this should be
 			// unreachable code

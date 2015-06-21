@@ -2,6 +2,20 @@ var log = require ('./logging.js');
 
 // Parameter validation ========================================================
 var paramTypes = {
+	UNSIGNED: {
+		name: 'unsigned',
+		validate: function (argList_) {
+			if (argList_.length < 1)
+				return 'No int parameter given.';
+
+			var val = parseInt (argList_[0]);
+
+			if (! isNaN (val) && val >= 0)
+				return argList_.splice (1);
+
+			return 'Unsigned parameter invalid: ' + val;
+		},
+	},
 	INT: {
 		name: 'int',
 		validate: function (argList_) {
@@ -109,6 +123,31 @@ var  frameCommands = {
 			y: paramTypes.INT,
 			width: paramTypes.INT,
 			height: paramTypes.INT,
+		}
+	},
+	shadow_blur: {
+		params: {
+			blur: paramTypes.UNSIGNED
+		}
+	},
+	shadow_color: {
+		params: {
+			colors: paramTypes.RGBA_COLOR,
+		}
+	},
+	shadow_offset_x: {
+		params: {
+			xOffset: paramTypes.INT
+		}
+	},
+	shadow_offset_y: {
+		params: {
+			yOffset: paramTypes.INT
+		},
+	},
+	stroke_style_color: {
+		params: {
+			color: paramTypes.RGBA_COLOR,
 		}
 	},
 };
