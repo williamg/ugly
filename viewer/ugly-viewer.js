@@ -1,6 +1,6 @@
 // Constants ===================================================================
 var SOCKET_PORT = 4444;
-var SOCKET_SERVER = 'ws://localhost:' + SOCKET_PORT;
+var SOCKET_SERVER = 'ws://127.0.0.1:' + SOCKET_PORT;
 
 // Globals =====================================================================
 var ugly = {
@@ -26,6 +26,10 @@ function initCanvas () {
 function initConnection () {
 	console.log ('Attempting to connect to websocket server ' + SOCKET_SERVER);
 	var socket = new WebSocket (SOCKET_SERVER);
+
+	socket.onerror = function (err_) {
+		console.log (err_);
+	};
 
 	socket.onmessage = function (message_) {
 		handleLine (message_.data);
