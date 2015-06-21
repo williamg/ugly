@@ -23,6 +23,7 @@ var ugly = {
 	socket: undefined,
 	currentChunk: undefined,
 	lineHandler: undefined,
+	configChunk: []
 };
 
 
@@ -35,7 +36,14 @@ function main () {
 
 	readlines (handleLine);
 	serveViewer ();
-	connectToViewer (function () {});
+	
+	// Once a viewer connects, we need to send the most recent config chunk if
+	// there is one
+	connectToViewer (function () {
+		for (var i = 0; i < ugly.configChunk.length; i++) {
+			sendData (ugly.configChunk[i]);
+		}
+	});
 }
 
 // Serve the static viewer
@@ -123,12 +131,16 @@ function handleLine (line_) {
 
 			ugly.currentChunk = chunkName;
 			ugly.lineHandler = CHUNK_HANDLERS[chunkName];
+
 			break;
 		// Chunk termination
 		} else if (startsWith ('$END_' + chunkName, line_)) {
 			if (ugly.currentChunk !== chunkName)
 				log.error ('Found ' + chunkName + ' terminator in non-' +
 				           chunkName + ' chunk.');
+
+			if (ugly.currentChunk === 'CONFIG')
+				ugly.configChunk.push (line_);
 
 			ugly.lineHandler = undefined;
 			ugly.currentChunk = undefined;
@@ -140,8 +152,13 @@ function handleLine (line_) {
 	if (! startsWith ('$', line_))
 			ugly.lineHandler (line_);
 
+	if (ugly.currentChunk === 'CONFIG')
+		ugly.configChunk.push (line_);
+
 	// We send everything, though
 	sendData (line_);
+
+
 }
 
 // Entry point =================================================================
