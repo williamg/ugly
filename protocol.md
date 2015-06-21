@@ -67,35 +67,35 @@ $END_CONFIG
             <th align="left">Description</th>
         </tr>
         <tr>
-            <td><pre>fill_style_color r g b a</pre></td>
+            <td><code>fill_style_color r g b a</code></td>
             <td>Sets a color to be used as the fillStyle for the canvas.
             RGB values should be integers from 0 to 255. Alpha should be a
             decimal from 0-1.</td>
         </tr>
         <tr>
-            <td><pre>fill_rect x y width height</pre></td>
-            <td>Fill a rectangle with the top left corner at <pre>(x,y)</pre>
-            with the given <pre>width</pre> and <pre>height</pre>.</td>
+            <td><code>fill_rect x y width height</code></td>
+            <td>Fill a rectangle with the top left corner at <code>(x,y)</code>
+            with the given <code>width</code> and <code>height</code>.</td>
         </tr>
         <tr>
-            <td><pre>shadow_color r g b a</pre></td>
+            <td><code>shadow_color r g b a</code></td>
             <td>Sets a color to be used as the shadowColor for the canvas.
             RGB values should be integers from 0 to 255. Alpha should be a
             decimal from 0-1.</td>
         </tr>
         <tr>
-            <td><pre>shadow_blur blur</pre></td>
-            <td>Sets the shadowBlur property. <pre>blur</pre> should be a
+            <td><code>shadow_blur blur</code></td>
+            <td>Sets the shadowBlur property. <code>blur</code> should be a
             positive integer.</td>
         </tr>
         <tr>
-            <td><pre>shadow_offset_x xOffset</pre></td>
-            <td>Sets the shadowOffsetX property. <pre>xOffset</pre> should be
+            <td><code>shadow_offset_x xOffset</code></td>
+            <td>Sets the shadowOffsetX property. <code>xOffset</code> should be
             an integer.</td>
         </tr>
         <tr>
-            <td><pre>shadow_offset_y yOffset</pre></td>
-            <td>Sets the shadowOffsetY property. <pre>yOffset</pre> should be
+            <td><code>shadow_offset_y yOffset</code></td>
+            <td>Sets the shadowOffsetY property. <code>yOffset</code> should be
             an integer.</td>
         </tr>
     </tbody>
