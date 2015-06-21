@@ -1,3 +1,4 @@
+/* global commands */
 // Constants ===================================================================
 var SOCKET_PORT = 4444;
 var SOCKET_SERVER = 'ws://127.0.0.1:' + SOCKET_PORT;
@@ -85,103 +86,63 @@ function canvasSize (command_) {
 	ugly.canvas.style.height = height;
 }
 
-function fillStyleColor (command_) {
-	var argList = toArgList (command_);
-
-	var red = parseInt (argList[1]);
-	var green = parseInt (argList[2]);
-	var blue = parseInt (argList[3]);
-	var alpha = parseFloat (argList[4]);
-
-	ugly.context.fillStyle = 'rgba(' + red + ',' + green + ',' +
-	                          blue + ',' + alpha + ')';
-}
-
-function fillRect (command_) {
-	var argList = toArgList (command_);
-
-	var x = parseInt (argList[1]);
-	var y = parseInt (argList[2]);
-	var width = parseInt (argList[3]);
-	var height = parseInt (argList[4]);
-
-	ugly.context.fillRect (x, y, width, height);
-}
-
-function strokeStyleColor (command_) {
-	var argList = toArgList (command_);
-
-	var red = parseInt (argList[1]);
-	var green = parseInt (argList[2]);
-	var blue = parseInt (argList[3]);
-	var alpha = parseFloat (argList[4]);
-
-	ugly.context.strokeStyle = 'rgba(' + red + ',' + green + ',' +
-	                           blue + ',' + alpha + ')';
-}
-
-function shadowColor (command_) {
-	var argList = toArgList (command_);
-
-	var red = parseInt (argList[1]);
-	var green = parseInt (argList[2]);
-	var blue = parseInt (argList[3]);
-	var alpha = parseFloat (argList[4]);
-
-	ugly.context.shadowColor = 'rgba(' + red + ',' + green + ',' +
-	                           blue + ',' + alpha + ')';
-}
-
-function shadowBlur (command_) {
-	var argList = toArgList (command_);
-
-	ugly.context.shadowBlur = parseInt (argList[1]);
-}
-
-function shadowOffsetX (command_) {
-	var argList = toArgList (command_);
-
-	ugly.context.shadowOffsetX = parseInt (argList[1]);
-}
-
-function shadowOffsetY (command_) {
-	var argList = toArgList (command_);
-
-	ugly.context.shadowOffsetY = parseInt (argList[1]);
-}
-
 // Executes all the commands in the queue
 function processQueuedCommands () {
 	for (var i = 0; i < ugly.queuedCommands.length; i++) {
-		var command = ugly.queuedCommands[i];
+		var argsList = ugly.queuedCommands[i].match (/\S+/g);
+		var name = argsList[0];
 
-		if (startsWith ('letterbox_color', command)) {
-			letterboxColor (command);
-		} else if (startsWith ('canvas_size', command)) {
-			canvasSize (command);
-		} else if (startsWith ('fill_style_color', command)) {
-			fillStyleColor (command);
-		} else if (startsWith ('fill_rect', command)) {
-			fillRect (command);
-		} else if (startsWith ('shadow_color', command)) {
-			shadowColor (command);
-		} else if (startsWith ('shadow_blur', command)) {
-			shadowBlur (command);
-		} else if (startsWith ('shadow_offset_x', command)) {
-			shadowOffsetX (command);
-		} else if (startsWith ('shadow_offset_y', command)) {
-			shadowOffsetY (command);
-		} else if (startsWith ('stroke_style_color', command)) {
-			strokeStyleColor (command);
+		/// TODO: Modify config functions to take argslist rather than string
+		if (commands.configCommands[name] !== undefined) {
+			processConfigCommand (argsList);
+		} else if (commands.frameCommands[name] !== undefined) {
+			processFrameCommand (argsList);
 		} else {
-			// Since we've already validated server-side, this should be
-			// unreachable code
 			console.assert (false);
 		}
 	}
-
 	// Empty the queue
 	ugly.queuedCommands = [];
+}
+
+// Since config functions aren't native, they have to be handled individually
+function processConfigCommand (argsList_) {
+	var name = argsList_[0];
+	var command = argsList_.join (' ');
+
+	if (name === 'letterbox_color') {
+		letterboxColor (command);
+	} else if (name === 'canvas_size') {
+		canvasSize (command);
+	} else {
+		console.assert (false);
+	}
+}
+
+// Frame commands are all native canvas functions, so they can be applied
+// generically
+function processFrameCommand (argsList_) {
+	var name = argsList_[0];
+	var command = commands.frameCommands[name];
+
+	argsList_ = argsList_.splice (1);
+
+	if (command.type === 'property') {
+		var propVal = command.params[0].type.value (argsList_);
+		ugly.context[command.name] = propVal.value;
+	} else {
+		console.assert (command.type === 'method');
+
+		var args = [];
+
+		for (var j = 0; j < command.params.length; j++) {
+			var res = command.params[j].type.value (argsList_);
+			args.push (res.value);
+			argsList_ = res.remaining;
+		}
+
+		ugly.context[command.name].apply (ugly.context, args);
+	}
 }
 
 // Takes a line as input and processes it appropriately. If this line is a

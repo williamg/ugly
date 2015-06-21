@@ -54,7 +54,8 @@ function main () {
 function serveViewer () {
 	var app = express ();
 
-	app.use (express.static (__dirname + '/viewer'));
+	// Need to do better than this
+	app.use (express.static (__dirname));
 	app.listen (VIEWER_PORT);
 
 	log.info ('Serving viewer at ' + VIEWER_ADDR);
@@ -173,8 +174,9 @@ function validateCommand (line_, chunkName_, chunkCommands_) {
 
 	var paramList = argList.slice (1);
 
-	for (var paramName in command.params) {
-		var paramType = command.params[paramName];
+	for (var i = 0; i < command.params.length; i++) {
+		var paramName = command.params[i].name;
+		var paramType = command.params[i].type;
 		var result = paramType.validate (paramList);
 
 		if (typeof (result) === 'string') {
