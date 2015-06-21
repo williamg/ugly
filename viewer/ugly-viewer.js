@@ -21,7 +21,6 @@ function initCanvas () {
 
 	ugly.queuedCommands = ugly.defaultConfig;
 	processQueuedCommands ();
-
 }
 
 function initConnection () {

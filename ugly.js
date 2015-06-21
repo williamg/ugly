@@ -33,11 +33,9 @@ function main () {
 	log.initLog (LOG_FILE, VERSION);
 	log.info ("Initializing...");
 
+	readlines (handleLine);
 	serveViewer ();
-
-	connectToViewer (function () {
-		readlines (handleLine);
-	});
+	connectToViewer (function () {});
 }
 
 // Serve the static viewer
@@ -69,9 +67,7 @@ function readlines (callback_) {
 	var unhandledText = '';
 
 	process.stdin.setEncoding ('utf8');
-	process.stdin.on ('readable', function () {
-		var chunk = process.stdin.read ();
-
+	process.stdin.on ('data', function (chunk) {
 		if (chunk === null)
 			return;
 
@@ -101,6 +97,9 @@ function startsWith (prefix_, string_) {
 // Write data_ to the client via websockets
 function sendData (data_) {
 	console.assert (typeof (data_) === 'string');
+
+	if (ugly.socket === undefined)
+		return;
 
 	ugly.socket.send (data_, function (err_) {
 		if (err_)
