@@ -104,6 +104,11 @@ $END_CONFIG
             'square')</td>
         </tr>
         <tr>
+            <td><pre>line_join joinType</pre></td>
+            <td>Sets the type of line join (options are 'bevel', 'round',
+            'miter')</td>
+        </tr>
+        <tr>
             <td><pre>shadow_color r g b a</pre></td>
             <td>Sets a color to be used as the shadowColor for the canvas.
             RGB values should be integers from 0 to 255. Alpha should be a

@@ -345,6 +345,14 @@ var  frameCommands = {
 			       paramTypes.STRING_ENUM (['butt', 'round', 'square']))
 		]
 	},
+	line_join: {
+		name: 'lineJoin',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('join type',
+			       paramTypes.STRING_ENUM (['bevel', 'round', 'miter']))
+		]
+	},
 	shadow_blur: {
 		name: 'shadowBlur',
 		type: commandTypes.PROPERTY,
