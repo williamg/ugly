@@ -1,6 +1,8 @@
 /* global ugly */
 
-// Parameter validation ======================================================== // Every parameter type comes with a name, a validate function, and a value // function. The name doesn't really matter. The validate function consumes
+// Parameter validation ========================================================
+// Every parameter type comes with a name, a validate function, and a value
+// function. The name doesn't really matter. The validate function consumes
 // arguments from the provided argument list and returns an error string if
 // the parameter is invalid. Otherwise, undefined is returned.
 // The value function assumes the parameter is valid and returns the
