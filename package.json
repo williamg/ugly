@@ -24,6 +24,7 @@
   "homepage": "https://github.com/williamg/ugly#readme",
   "dependencies": {
     "express": "^4.12.4",
+    "nodeunit": "^0.9.1",
     "ws": "^0.7.2"
   }
 }
