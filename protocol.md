@@ -1,14 +1,15 @@
 # Ugly Protocol
-####**v1.0.5**
+
+**v1.0.5**
 
 ---
 
+## Introduction
 
-
-##Introduction
 This document defines format expected by **ugly** to render graphics.
 
 ### Terminology
+
 **ugly** epxects data to be divided into *chunks*. A chunk is simply a group of
 related commands. Currently, **ugly** supports two types of chunks:
 - **CONFIG** - Config chunks define settings that will be used throughout the
@@ -17,6 +18,7 @@ render such as background color, aspect ratio, etc.
 particular frame.
 
 ### Syntax
+
 The **ugly** syntax is fairly straightforward. Every chunk declaration and every
 command should be on its own line. Additionally, every parameter for a given
 command should be separated by at least one space.
@@ -37,6 +39,7 @@ $END_CONFIG
 ```
 
 ## Commands
+
 ### Config Commands
 
 <table>
@@ -71,6 +74,24 @@ $END_CONFIG
             <td>Sets a color to be used as the fillStyle for the canvas.
             RGB values should be integers from 0 to 255. Alpha should be a
             decimal from 0-1.</td>
+        </tr>
+        <tr>
+            <td><pre>fill_style_linear_gradient x y width height pos color pos
+            color ...</pre></td>
+            <td>Sets a linear gradient to be used as the fillStyle for the
+            canvas. <code>x</code> and <code>y</code> should be integers,
+            <code>width</code> and <code>height</code> should be positive integers.
+            Each <code>pos</code> should be between 0 and 1, and each
+            <code>color</code> should have 4 components for r, g, b, and a respectively.</td>
+        </tr>
+        <tr>
+            <td><pre>fill_style_radial_gradient x0 y0 r0 x1 y1 r1 pos color pos
+            color ...</pre></td>
+            <td>Sets a radial gradient to be used as the fillStyle for the
+            canvas. <code>x0, x1, y0,</code> and <code>y1</code> should be integers,
+            <code>r0</code> and <code>r1</code> should be positive integers.
+            Each <code>pos</code> should be between 0 and 1, and each
+            <code>color</code> should have 4 components for r, g, b, and a respectively.</td>
         </tr>
         <tr>
             <td><pre>fill_rect x y width height</pre></td>

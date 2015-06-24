@@ -1,6 +1,6 @@
-// Parameter validation ========================================================
-// Every parameter type comes with a name, a validate function, and a value
-// function. The name doesn't really matter. The validate function consumes
+/* global ugly */
+
+// Parameter validation ======================================================== // Every parameter type comes with a name, a validate function, and a value // function. The name doesn't really matter. The validate function consumes
 // arguments from the provided argument list and returns an error string if
 // the parameter is invalid. Otherwise, undefined is returned.
 // The value function assumes the parameter is valid and returns the
@@ -119,7 +119,108 @@ var paramTypes = {
 			return 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')';
 		}
 	},
-	
+	LINEAR_GRADIENT: {
+		name: 'linear gradient',
+		validate: function (argList_) {
+			if (argList_.length < 4)
+				return 'x, y, width, and height components must be provided.';
+
+			var res = paramTypes.INT.validate (argList_) ||
+					  paramTypes.INT.validate (argList_) ||
+					  paramTypes.UNSIGNED.validate (argList_) ||
+					  paramTypes.UNSIGNED.validate (argList_);
+
+			if (res)
+				return res;
+
+			// Validate color stops
+			while (argList_.length >= 2) {
+				var res2 = paramTypes.FLOAT.validate (argList_) ||
+						   paramTypes.RGBA_COLOR.validate (argList_);
+
+				if (res2)
+					return res2;
+			}
+
+			return undefined;
+		},
+		value: function (argList_) {
+			var x = paramTypes.INT.value (argList_);
+			var y = paramTypes.INT.value (argList_);
+			var width = paramTypes.UNSIGNED.value (argList_);
+			var height = paramTypes.UNSIGNED.value (argList_);
+
+			// Ugh this is gross
+			if (ugly.context === undefined)
+				return undefined;
+
+			var gradient =
+				ugly.context.createLinearGradient (x, y, width, height);
+
+			while (argList_.length >= 2) {
+				var position = paramTypes.FLOAT.value (argList_);
+				var color = paramTypes.RGBA_COLOR.value (argList_);
+
+				gradient.addColorStop (position, color);
+			}
+
+			return gradient;
+		}
+	},
+	RADIAL_GRADIENT: {
+		name: 'radial gradient',
+		validate: function (argList_) {
+			if (argList_.length < 6)
+				return 'x0, y0, r0, x1, y1, and r1 components must ' +
+				       'be provided.';
+
+			var res = paramTypes.INT.validate (argList_) ||
+			          paramTypes.INT.validate (argList_) ||
+			          paramTypes.UNSIGNED.validate (argList_) ||
+			          paramTypes.INT.validate (argList_) ||
+			          paramTypes.INT.validate (argList_) ||
+			          paramTypes.UNSIGNED.validate (argList_);
+
+			if (res)
+				return res;
+
+			// Validate color stops
+			while (argList_.length >= 2) {
+				var res2 = paramTypes.FLOAT.validate (argList_) ||
+						   paramTypes.RGBA_COLOR.validate (argList_);
+
+				if (res2)
+					return res2;
+			}
+
+			return undefined;
+		},
+		value: function (argList_) {
+			var x0 = paramTypes.INT.value (argList_);
+			var y0 = paramTypes.INT.value (argList_);
+			var r0 = paramTypes.UNSIGNED.value (argList_);
+			var x1 = paramTypes.INT.value (argList_);
+			var y1 = paramTypes.INT.value (argList_);
+			var r1 = paramTypes.UNSIGNED.value (argList_);
+
+			// Ugh this is gross
+			if (ugly.context === undefined)
+				return undefined;
+
+			var gradient =
+				ugly.context.createRadialGradient (x0, y0, r0, x1, y1, r1);
+
+			while (argList_.length >= 2) {
+				var position = paramTypes.FLOAT.value (argList_);
+				var color = paramTypes.RGBA_COLOR.value (argList_);
+
+				gradient.addColorStop (position, color);
+			}
+
+			return gradient;
+		}
+	}
+
 };
 
 // Command definitions =========================================================
@@ -159,6 +260,20 @@ var  frameCommands = {
 		type: commandTypes.PROPERTY,
 		params: [
 			param ('color', paramTypes.RGBA_COLOR)
+		]
+	},
+	fill_style_linear_gradient: {
+		name: 'fillStyle',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('gradient', paramTypes.LINEAR_GRADIENT)
+		]
+	},
+	fill_style_radial_gradient: {
+		name: 'fillStyle',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('gradient', paramTypes.RADIAL_GRADIENT)
 		]
 	},
 	fill_rect: {
