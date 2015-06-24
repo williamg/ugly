@@ -119,6 +119,30 @@ $END_CONFIG
             <td>Sets the shadowOffsetY property. <code>yOffset</code> should be
             an integer.</td>
         </tr>
+        <tr>
+            <td><pre>stroke_style_color r g b a</pre></td>
+            <td>Sets a color to be used as the strokeStyle for the canvas.
+            RGB values should be integers from 0 to 255. Alpha should be a
+            decimal from 0-1.</td>
+        </tr>
+        <tr>
+            <td><pre>stroke_style_linear_gradient x y width height pos color pos
+            color ...</pre></td>
+            <td>Sets a linear gradient to be used as the strokeStyle for the
+            canvas. <code>x</code> and <code>y</code> should be integers,
+            <code>width</code> and <code>height</code> should be positive integers.
+            Each <code>pos</code> should be between 0 and 1, and each
+            <code>color</code> should have 4 components for r, g, b, and a respectively.</td>
+        </tr>
+        <tr>
+            <td><pre>stroke_style_radial_gradient x0 y0 r0 x1 y1 r1 pos color pos
+            color ...</pre></td>
+            <td>Sets a radial gradient to be used as the strokeStyle for the
+            canvas. <code>x0, x1, y0,</code> and <code>y1</code> should be integers,
+            <code>r0</code> and <code>r1</code> should be positive integers.
+            Each <code>pos</code> should be between 0 and 1, and each
+            <code>color</code> should have 4 components for r, g, b, and a respectively.</td>
+        </tr>
     </tbody>
 </table>
 

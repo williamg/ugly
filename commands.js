@@ -321,6 +321,20 @@ var  frameCommands = {
 			param ('color', paramTypes.RGBA_COLOR)
 		]
 	},
+	stroke_style_linear_gradient: {
+		name: 'strokeStyle',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('gradient', paramTypes.LINEAR_GRADIENT)
+		]
+	},
+	stroke_style_radial_gradient: {
+		name: 'strokeStyle',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('gradient', paramTypes.RADIAL_GRADIENT)
+		]
+	},
 };
 
 var commands = {
