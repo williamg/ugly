@@ -9,6 +9,28 @@
 // appropriate javascript type represented by the parameter
 
 var paramTypes = {
+	// Dynamic types
+	STRING_ENUM: function (options_) {
+		return {
+			name: 'string enum',
+			validate: function (argList_) {
+				if (argList_.length < 1)
+					return 'Option must be provided.';
+
+				var val = argList_.shift ();
+
+				if (options_.indexOf (val) === -1)
+					return 'Invalid option "' + val + '"';
+
+				return undefined;
+			},
+			value: function(argList_) {
+				return argList_.shift ();
+			}
+		};
+	},
+
+	// Explicit types
 	UNSIGNED: {
 		name: 'unsigned',
 		validate: function (argList_) {
@@ -286,6 +308,14 @@ var  frameCommands = {
 			param ('y', paramTypes.INT),
 			param ('width', paramTypes.INT),
 			param ('height', paramTypes.INT)
+		]
+	},
+	line_cap: {
+		name: 'lineCap',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('cap type',
+			       paramTypes.STRING_ENUM (['butt', 'round', 'square']))
 		]
 	},
 	shadow_blur: {
