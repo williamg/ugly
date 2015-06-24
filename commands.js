@@ -2,10 +2,9 @@
 // Every parameter type comes with a name, a validate function, and a value
 // function. The name doesn't really matter. The validate function consumes
 // arguments from the provided argument list and returns an error string if
-// the parameter is invalid. Otherwise, PARAM_VALID is returned which is
-// undefined at the moment. The value function assumes the parameter is valid
-// and returns the apporpriate javascript type represented by the parameter
-var PARAM_VALID;
+// the parameter is invalid. Otherwise, undefined is returned.
+// The value function assumes the parameter is valid and returns the
+// appropriate javascript type represented by the parameter
 
 var paramTypes = {
 	UNSIGNED: {
@@ -17,7 +16,7 @@ var paramTypes = {
 			var val = parseInt (argList_.shift ());
 
 			if (! isNaN (val) && val >= 0)
-				return PARAM_VALID;
+				return undefined;
 
 			return 'Unsigned parameter invalid: ' + val;
 		},
@@ -34,7 +33,7 @@ var paramTypes = {
 			var val = argList_.shift ();
 
 			if (! isNaN (parseInt (val)))
-				return PARAM_VALID;
+				return undefined;
 
 			return 'Int parameter invalid: ' + val;
 		},
@@ -51,7 +50,7 @@ var paramTypes = {
 			var val = argList_.shift ();
 
 			if (! isNaN (parseFloat (val)))
-				return PARAM_VALID;
+				return undefined;
 
 			return 'Float parameter invalid: ' + val;
 		},
@@ -82,7 +81,7 @@ var paramTypes = {
 			if (isNaN (blue) || blue < 0 || blue > 255)
 				return 'Invalid blue parameter: ' + third;
 
-			return PARAM_VALID;
+			return undefined;
 		},
 		value: function (argList_) {
 			var red = parseInt (argList_.shift ());
@@ -100,7 +99,7 @@ var paramTypes = {
 
 			var res = paramTypes.RGB_COLOR.validate (argList_);
 
-			if (res !== PARAM_VALID)
+			if (res !== undefined)
 				return res;
 
 			var fourth = argList_.shift ();
@@ -109,7 +108,7 @@ var paramTypes = {
 			if (isNaN (alpha) || alpha < 0 || alpha > 1)
 				return 'Invalid alpha parameter: ' + fourth;
 
-			return PARAM_VALID;
+			return undefined;
 		},
 		value: function (argList_) {
 			var red = parseInt (argList_.shift ());
@@ -120,6 +119,7 @@ var paramTypes = {
 			return 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')';
 		}
 	},
+	
 };
 
 // Command definitions =========================================================
