@@ -109,6 +109,16 @@ $END_CONFIG
             'miter')</td>
         </tr>
         <tr>
+            <td><pre>line_width width</pre></td>
+            <td>Sets the width of lines. <code>witdth</code> should be a
+            positive integer.</td>
+        </tr>
+        <tr>
+            <td><pre>miter_limit limit</pre></td>
+            <td>Sets the miter limit <code>limit</code> should be a
+            positive integer.</td>
+        </tr>
+        <tr>
             <td><pre>shadow_color r g b a</pre></td>
             <td>Sets a color to be used as the shadowColor for the canvas.
             RGB values should be integers from 0 to 255. Alpha should be a

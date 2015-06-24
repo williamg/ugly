@@ -353,6 +353,20 @@ var  frameCommands = {
 			       paramTypes.STRING_ENUM (['bevel', 'round', 'miter']))
 		]
 	},
+	line_width: {
+		name: 'lineWidth',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('line width', paramTypes.UNSIGNED)
+		]
+	},
+	miter_limit: {
+		name: 'miterLimit',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('miter limit', paramTypes.UNSIGNED)
+		]
+	},
 	shadow_blur: {
 		name: 'shadowBlur',
 		type: commandTypes.PROPERTY,
