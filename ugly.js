@@ -180,7 +180,8 @@ function validateCommand (line_, chunkName_, chunkCommands_) {
 
 		if (error) {
 			log.error ('Error processing param "' + paramName + '" in '+
-			           'command "' + commandName + '": ' + error);
+			           'command "' + commandName + '": ' + error + '\n' +
+			           'Command: ' + line_);
 		}
 	}
 
