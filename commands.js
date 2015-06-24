@@ -10,6 +10,46 @@
 
 var paramTypes = {
 	// Dynamic types
+	BOUNDED_INT: function (min_, max_) {
+		return {
+			name: 'bounded int',
+			validate: function (argList_) {
+				if (argList_.length < 1)
+					return 'No int parameter given.';
+
+				var val = argList_.shift ();
+				var num = parseInt (val);
+
+				if (! isNaN (num) && num >= min_ && num <= max_)
+					return undefined;
+
+				return 'Invalid int parameter: ' + val;
+			},
+			value: function (argList_) {
+				return parseInt (argList_.shift ());
+			}
+		};
+	},
+	BOUNDED_FLOAT: function (min_, max_) {
+		return {
+			name: 'bounded int',
+			validate: function (argList_) {
+				if (argList_.length < 1)
+					return 'No int parameter given.';
+
+				var val = argList_.shift ();
+				var num = parseFloat (val);
+
+				if (! isNaN (num) && num >= min_ && num <= max_)
+					return undefined;
+
+				return 'Invalid float parameter: ' + val;
+			},
+			value: function (argList_) {
+				return parseFloat (argList_.shift ());
+			}
+		};
+	},
 	STRING_ENUM: function (options_) {
 		return {
 			name: 'string enum',
@@ -88,22 +128,13 @@ var paramTypes = {
 			if (argList_.length < 3)
 				return 'All 3 color components must be provided.';
 
-			var first = argList_.shift ();
-			var second = argList_.shift ();
-			var third = argList_.shift ();
+			var COLOR_VAL = paramTypes.BOUNDED_INT (0, 255);
+			var res = COLOR_VAL.validate (argList_) ||
+			          COLOR_VAL.validate (argList_) ||
+			          COLOR_VAL.validate (argList_);
 
-			var red = parseInt (first);
-			var green = parseInt (second);
-			var blue = parseInt (third);
-
-			if (isNaN (red) || red < 0 || red > 255)
-				return 'Invalid red parameter: ' + first;
-
-			if (isNaN (green) || green < 0 || green > 255)
-				return 'Invalid green parameter: ' + second;
-
-			if (isNaN (blue) || blue < 0 || blue > 255)
-				return 'Invalid blue parameter: ' + third;
+			if (res)
+				return res;
 
 			return undefined;
 		},
@@ -121,16 +152,12 @@ var paramTypes = {
 			if (argList_.length < 4)
 				return 'All 4 color components must be provided.';
 
-			var res = paramTypes.RGB_COLOR.validate (argList_);
+			var ALPHA_VAL = paramTypes.BOUNDED_FLOAT (0, 1);
+			var res = paramTypes.RGB_COLOR.validate (argList_) ||
+			          ALPHA_VAL.validate (argList_);
 
 			if (res !== undefined)
 				return res;
-
-			var fourth = argList_.shift ();
-			var alpha = parseFloat (fourth);
-
-			if (isNaN (alpha) || alpha < 0 || alpha > 1)
-				return 'Invalid alpha parameter: ' + fourth;
 
 			return undefined;
 		},
