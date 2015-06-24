@@ -167,28 +167,24 @@ function handleLine (line_) {
 function validateCommand (line_, chunkName_, chunkCommands_) {
 	var argList = line_.match (/\S+/g);
 
-	var command = chunkCommands_[argList[0]];
+	var commandName = argList.shift ();
+	var command = chunkCommands_[commandName];
 
 	if (command === undefined)
-		log.error ('Unknown ' + chunkName_ + ' command "' + argList[0] + '"');
-
-	var paramList = argList.slice (1);
+		log.error ('Unknown ' + chunkName_ + ' command "' + commandName + '"');
 
 	for (var i = 0; i < command.params.length; i++) {
 		var paramName = command.params[i].name;
 		var paramType = command.params[i].type;
-		var result = paramType.validate (paramList);
+		var error = paramType.validate (argList);
 
-		if (typeof (result) === 'string') {
+		if (error) {
 			log.error ('Error processing param "' + paramName + '" in '+
-			           'command "' + argList[0] + '": ' + result);
-		} else {
-			console.assert (result.constructor === Array);
-			paramList = result;
+			           'command "' + commandName + '": ' + error);
 		}
 	}
 
-	if (paramList.length !== 0)
+	if (argList.length !== 0)
 		log.error ('Extraneous parameters: ' + line_);
 }
 

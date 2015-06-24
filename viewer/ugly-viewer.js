@@ -128,17 +128,14 @@ function processFrameCommand (argsList_) {
 	argsList_ = argsList_.splice (1);
 
 	if (command.type === 'property') {
-		var propVal = command.params[0].type.value (argsList_);
-		ugly.context[command.name] = propVal.value;
+		ugly.context[command.name] = command.params[0].type.value (argsList_);
 	} else {
 		console.assert (command.type === 'method');
 
 		var args = [];
 
 		for (var j = 0; j < command.params.length; j++) {
-			var res = command.params[j].type.value (argsList_);
-			args.push (res.value);
-			argsList_ = res.remaining;
+			args.push (command.params[j].type.value (argsList_));
 		}
 
 		ugly.context[command.name].apply (ugly.context, args);
