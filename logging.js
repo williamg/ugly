@@ -30,11 +30,10 @@ var logger = {
 	error: function (msg_) {
 		var time = new Date ().getTime ();
 
-		msg_ = '[' + time + '] ERROR: ' + msg_;
+		var logMsg = '[' + time + '] ERROR: ' + msg_;
 
-		console.error (msg_);
-		fs.appendFileSync (logger._logFile, msg_);
-		process.exit (1);
+		fs.appendFileSync (logger._logFile, logMsg);
+		throw new Error (msg_);
 	}
 };
 
