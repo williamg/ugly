@@ -4,7 +4,7 @@
   "description": "A universal graphics library.",
   "main": "ugly.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./test"
   },
   "repository": {
     "type": "git",
