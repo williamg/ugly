@@ -371,14 +371,16 @@ var  frameCommands = {
 		name: 'lineWidth',
 		type: commandTypes.PROPERTY,
 		params: [
-			param ('line width', paramTypes.UNSIGNED)
+			param ('line width', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
 		]
 	},
 	miter_limit: {
 		name: 'miterLimit',
 		type: commandTypes.PROPERTY,
 		params: [
-			param ('miter limit', paramTypes.UNSIGNED)
+			param ('miter limit',
+			       paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
+
 		]
 	},
 	rect: {
@@ -395,7 +397,7 @@ var  frameCommands = {
 		name: 'shadowBlur',
 		type: commandTypes.PROPERTY,
 		params: [
-			param ('blur', paramTypes.UNSIGNED)
+			param ('blur', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
 		]
 	},
 	shadow_color: {
@@ -409,14 +411,14 @@ var  frameCommands = {
 		name: 'shadowOffsetX',
 		type: commandTypes.PROPERTY,
 		params: [
-			param ('xOffset', paramTypes.INT)
+			param ('xOffset', paramTypes.FLOAT)
 		]
 	},
 	shadow_offset_y: {
 		name: 'shadowOffsetY',
 		type: commandTypes.PROPERTY,
 		params: [
-			param ('yOffset', paramTypes.INT)
+			param ('yOffset', paramTypes.FLOAT)
 		]
 	},
 	stroke_rect: {
