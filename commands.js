@@ -336,10 +336,10 @@ var  frameCommands = {
 		name: 'fillRect',
 		type: commandTypes.METHOD,
 		params: [
-			param ('x', paramTypes.INT),
-			param ('y', paramTypes.INT),
-			param ('width', paramTypes.INT),
-			param ('height', paramTypes.INT)
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT),
+			param ('width', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
+			param ('height', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
 		]
 	},
 	line_cap: {

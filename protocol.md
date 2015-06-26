@@ -15,8 +15,7 @@ related commands. Currently, **ugly** supports two types of chunks:
 - **CONFIG** - Config chunks define settings that will be used throughout the
 render such as background color, aspect ratio, etc.
 - **FRAME** - A frame chunk defines the commands that will be run on a
-particular frame.
-
+particular frame.  
 ### Syntax
 
 The **ugly** syntax is fairly straightforward. Every chunk declaration and every
@@ -96,7 +95,8 @@ $END_CONFIG
         <tr>
             <td><pre>fill_rect x y width height</pre></td>
             <td>Fill a rectangle with the top left corner at <code>(x,y)</code>
-            with the given <code>width</code> and <code>height</code>.</td>
+            with the given <code>width</code> and <code>height</code> which
+            should both be positive.</td>
         </tr>
         <tr>
             <td><pre>line_cap capType</pre></td>
