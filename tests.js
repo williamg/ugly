@@ -9,40 +9,95 @@ var commands = sandbox ('commands.js', globals);
 var paramTypes = commands.paramTypes;
 
 // Parameter validation ========================================================
-function testValid (res, test) {
-	test.strictEqual (res, undefined);
-}
+function paramTest (testData) {
+	console.assert (testData.paramType);
+	console.assert (testData.validInputs);
+	console.assert (testData.invalidInputs);
 
-function testInvalid (res, test) {
-	test.strictEqual (typeof (res), 'string');
-}
+	var testFunction = function (test) {
+		for (var validIdx in testData.validInputs) {
+			var validInput = testData.validInputs[validIdx];
 
-exports.paramTypeValidation = {
-	boundedInt: function (test) {
-		var TEST = paramTypes.BOUNDED_INT (0, 10);
+			var validMsg = "Testing valid input: " + validInput;
 
-		var argList = ['2'];
-		test.strictEqual (TEST.validate (argList), undefined);
-		test.deepEqual (argList, []);
+			test.strictEqual (
+				testData.paramType.validate (validInput), undefined, validMsg);
+		}
 
-		var argList = ['0', '1', '2'];
-		test.strictEqual (TEST.validate (argList), undefined);
-		test.deepEqual (argList, ['1', '2']);
+		for (var invalidIdx in testData.invalidInputs) {
+			var invalidInput = testData.invalidInputs[invalidIdx];
 
-		var argList = ['10'];
-		test.strictEqual (TEST.validate (argList), undefined);
-		test.deepEqual (argList, []);
+			var invalidMsg = "Testing invalid input: " + invalidInput;
 
-		var argList = ['-1'];
-		test.strictEqual (typeof (TEST.validate (argList)), 'string');
-		test.deepEqual (argList, []);
-
-		var argList = ['12'];
-		test.strictEqual (typeof (TEST.validate (argList)), 'string');
-		test.deepEqual (argList, []);
+			test.notStrictEqual (
+				testData.paramType.validate (invalidInput), undefined,
+				invalidMsg);
+		}
 
 		test.done ();
-	}
+	};
+
+	return testFunction;
+}
+
+
+exports.paramTypeValidation = {
+	boundedInt: paramTest ({
+		paramType: paramTypes.BOUNDED_INT (0, 10),
+		validInputs: [
+			['0'], ['5'], ['10']
+		],
+		invalidInputs: [
+			['0.0'], ['-1'], ['-1.0'], ['12'], ['5.0'], ['5 text'], [' '],
+			['']
+		]
+	}),
+	boundedFloat: paramTest({
+		paramType: paramTypes.BOUNDED_FLOAT (0.0, 1.0),
+		validInputs: [
+			['0.0'], ['0.12'], ['1.0'], ['1.0000'], ['0'], ['1']
+		],
+		invalidInputs: [
+			['0 is a number'], ['0.0.0'], ['-1'], ['-0.45'], ['-.45'], ['2'],
+			[' '], ['']
+		]
+	}),
+	stringEnum: paramTest({
+		paramType: paramTypes.STRING_ENUM (['true', 'false']),
+		validInputs: [
+			['true'], ['false']
+		],
+		invalidInputs: [
+			['true false'], ['true0'], ['0'], [' '], ['']
+		]
+	}),
+	unsigned: paramTest ({
+		paramType: paramTypes.UNSIGNED,
+		validInputs: [
+			['0'], ['5'], ['2345670']
+		], 
+		invalidInputs: [
+			['4.0'], ['-0.0'], ['-234'], ['4f'], [' '], ['']
+		]
+	}),
+	integer: paramTest ({
+		paramType: paramTypes.INT,
+		validInputs: [
+			['1'], ['-20'], ['400'], ['0']
+		],
+		invalidInputs: [
+			['1.0'], ['7eleven'], ['me'], ['-40.0'], [' '], ['']
+		],
+	}),
+	floating: paramTest ({
+		paramType: paramTypes.FLOAT,
+		validInputs: [
+			['1.0'], ['1'], ['-3'], ['-48.0'], ['100000']
+		],
+		invalidInputs: [
+			['1.0.0'], ['4.0float'], ['4.0f'], [' '], ['']
+		]
+	}),
 };
 
 exports.paramEvaluation = {
