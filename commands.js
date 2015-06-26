@@ -26,8 +26,7 @@ var paramTypes = {
 
 				return 'Invalid int parameter: ' + val;
 			},
-			value: function (argList_) {
-				return parseInt (argList_.shift ());
+			value: function (argList_) { return parseInt (argList_.shift ());
 			}
 		};
 	},
@@ -311,6 +310,16 @@ var configCommands = {
 };
 
 var  frameCommands = {
+	clear_rect: {
+		name: 'clearRect',
+		type: commandTypes.METHOD,
+		params: [
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT),
+			param ('width', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
+			param ('height', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
+		]
+	},
 	fill_style_color: {
 		name: 'fillStyle',
 		type: commandTypes.PROPERTY,
@@ -372,6 +381,16 @@ var  frameCommands = {
 			param ('miter limit', paramTypes.UNSIGNED)
 		]
 	},
+	rect: {
+		name: 'rect',
+		type: commandTypes.METHOD,
+		params: [
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT),
+			param ('width', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
+			param ('height', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
+		]
+	},
 	shadow_blur: {
 		name: 'shadowBlur',
 		type: commandTypes.PROPERTY,
@@ -398,6 +417,16 @@ var  frameCommands = {
 		type: commandTypes.PROPERTY,
 		params: [
 			param ('yOffset', paramTypes.INT)
+		]
+	},
+	stroke_rect: {
+		name: 'strokeRect',
+		type: commandTypes.METHOD,
+		params: [
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT),
+			param ('width', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
+			param ('height', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
 		]
 	},
 	stroke_style_color: {
