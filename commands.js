@@ -18,10 +18,11 @@ var paramTypes = {
 					return 'No int parameter given.';
 
 				var val = argList_.shift ();
+				var regex = /^-?\d+$/;
 				var num = parseInt (val);
 
-				if (! isNaN (num) && num >= min_ && num <= max_)
-					return undefined;
+				if (regex.test (val) && min_ <= num && num <= max_)
+					return;
 
 				return 'Invalid int parameter: ' + val;
 			},
@@ -38,9 +39,10 @@ var paramTypes = {
 					return 'No int parameter given.';
 
 				var val = argList_.shift ();
+				var regex = /(?=.*\d+)(^-?\d*\.?\d*$)/;
 				var num = parseFloat (val);
 
-				if (! isNaN (num) && num >= min_ && num <= max_)
+				if (regex.test (val) && min_ <= num && num <= max_)
 					return undefined;
 
 				return 'Invalid float parameter: ' + val;
@@ -77,9 +79,10 @@ var paramTypes = {
 			if (argList_.length < 1)
 				return 'No int parameter given.';
 
-			var val = parseInt (argList_.shift ());
+			var val = argList_.shift ();
+			var regex = /^\d+$/;
 
-			if (! isNaN (val) && val >= 0)
+			if (regex.test (val))
 				return undefined;
 
 			return 'Unsigned parameter invalid: ' + val;
@@ -95,8 +98,9 @@ var paramTypes = {
 				return 'No int parameter given.';
 
 			var val = argList_.shift ();
+			var regex = /^-?\d+$/;
 
-			if (! isNaN (parseInt (val)))
+			if (regex.test (val))
 				return undefined;
 
 			return 'Int parameter invalid: ' + val;
@@ -112,8 +116,9 @@ var paramTypes = {
 				return 'No float parameter given.';
 
 			var val = argList_.shift ();
+			var regex = /(?=.*\d+)(^-?\d*\.?\d*$)/;
 
-			if (! isNaN (parseFloat (val)))
+			if (regex.test (val))
 				return undefined;
 
 			return 'Float parameter invalid: ' + val;

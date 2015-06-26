@@ -43,22 +43,23 @@ function paramTest (testData) {
 
 exports.paramTypeValidation = {
 	boundedInt: paramTest ({
-		paramType: paramTypes.BOUNDED_INT (0, 10),
+		paramType: paramTypes.BOUNDED_INT (-10, 10),
 		validInputs: [
-			['0'], ['5'], ['10']
+			['0'], ['5'], ['10'], ['-10']
 		],
 		invalidInputs: [
-			['0.0'], ['-1'], ['-1.0'], ['12'], ['5.0'], ['5 text'], [' '],
+			['0.0'], ['-1.0'], ['12'], ['5.0'], ['5 text'], [' '],
 			['']
 		]
 	}),
 	boundedFloat: paramTest({
-		paramType: paramTypes.BOUNDED_FLOAT (0.0, 1.0),
+		paramType: paramTypes.BOUNDED_FLOAT (-1.0, 1.0),
 		validInputs: [
-			['0.0'], ['0.12'], ['1.0'], ['1.0000'], ['0'], ['1']
+			['0.0'], ['-0.12'], ['1.0'], ['1.0000'], ['0'], ['1'], ['-.02'],
+			['-1']
 		],
 		invalidInputs: [
-			['0 is a number'], ['0.0.0'], ['-1'], ['-0.45'], ['-.45'], ['2'],
+			['0 is a number'], ['0.0.0'], ['.'], ['2'],
 			[' '], ['']
 		]
 	}),
