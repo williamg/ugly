@@ -566,12 +566,22 @@ var  frameCommands = {
 			param ('height', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
 		]
 	},
+	restore: {
+		name: 'restore',
+		type: commandTypes.METHOD,
+		params: []
+	},
 	rotate: {
 		name: 'rotate',
 		type: commandTypes.METHOD,
 		params: [
 			param ('angle', paramTypes.FLOAT)
 		]
+	},
+	save: {
+		name: 'save',
+		type: commandTypes.METHOD,
+		params: []
 	},
 	scale: {
 		name: 'scale',
