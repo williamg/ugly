@@ -274,8 +274,63 @@ var paramTypes = {
 
 			return gradient;
 		}
-	}
+	},
+	FONT: {
+		name: 'font',
+		validate: function (argList_) {
+			if (argList_.length < 1)
+				return 'Font must be provided.';
 
+			// Assume we consume everything
+			for (var i = 0; i < argList_.length; i++)
+				argList_.shift ();
+
+			return true;
+		},
+		value: function (argList_) {
+			var fontString =  argList_.join (' ');
+
+			// Assume we consume everything
+			for (var i = 0; i < argList_.length; i++)
+				argList_.shift ();
+
+			return fontString;
+		}
+	},
+	TEXT: {
+		name: 'text',
+		validate: function (argList_) {
+			if (argList_.length < 1)
+				return 'Text must be provided.';
+
+			var regex = /^"([^\\"]|\\.)*"$/;
+			var string = argList_.shift ();
+
+			while (! regex.test (string)) {
+				if (argList_.length === 0)
+					return 'Invalid text string!';
+
+				string += ' ' + argList_.shift ();
+			}
+
+			return undefined;
+		},
+		value: function (argList_) {
+			var regex = /^"([^\\"]|\\.)*"$/;
+			var string = argList_.shift ();
+
+			while (! regex.test (string)) {
+				if (argList_.length === 0)
+					return '';
+
+				string += ' ' + argList_.shift ();
+			}
+
+			var esc =  string.replace (/\\"/g, '"');
+			esc = esc.replace (/\\\\/g, '\\');
+			return esc.substring (1, esc.length-1);
+		},
+	}
 };
 
 // Command definitions =========================================================
@@ -403,6 +458,22 @@ var  frameCommands = {
 			param ('y', paramTypes.FLOAT),
 			param ('width', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
 			param ('height', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
+		]
+	},
+	fill_text: {
+		name: 'fillText',
+		type: commandTypes.METHOD,
+		params: [
+			param ('text', paramTypes.TEXT),
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT),
+		]
+	},
+	font: {
+		name: 'font',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('font', paramTypes.FONT)
 		]
 	},
 	line_cap: {
@@ -553,6 +624,33 @@ var  frameCommands = {
 		type: commandTypes.PROPERTY,
 		params: [
 			param ('gradient', paramTypes.RADIAL_GRADIENT)
+		]
+	},
+	stroke_text: {
+		name: 'strokeText',
+		type: commandTypes.METHOD,
+		params: [
+			param ('text', paramTypes.TEXT),
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT),
+		]
+	},
+	text_align: {
+		name: 'textAlign',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('align', paramTypes.STRING_ENUM (['start', 'end', 'center',
+			                                         'left', 'right']))
+		]
+	},
+	text_baseline: {
+		name: 'testBaseline',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('baseline', paramTypes.STRING_ENUM (['alphabetic', 'top',
+			                                            'hanging', 'middle',
+			                                            'ideographic',
+			                                            'bottom']))
 		]
 	},
 	transform: {

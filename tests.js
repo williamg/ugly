@@ -99,6 +99,23 @@ exports.paramTypeValidation = {
 			['1.0.0'], ['4.0float'], ['4.0f'], [' '], ['']
 		]
 	}),
+	text: paramTest ({
+		paramType: paramTypes.TEXT,
+		validInputs: [
+			['"Hello"'],
+			'"Hello world!"'.match (/\S+/g),
+			'"Hello\\"World"'.match (/\S+/g),
+			'"Hello this is a long string \\"With a quote in it!\\""'.match (/\S+/g),
+			'"This has \'other\' quotes in it! How \\"exciting\\""'.match (/\S+/g),
+			['""']
+		],
+		invalidInputs: [
+			['Hello'],
+			['"'],
+			'"Hello world'.match(/\S+/g),
+			'"Hello worl"d"'.match(/\S+/g),
+		]
+	})
 };
 
 exports.paramEvaluation = {
