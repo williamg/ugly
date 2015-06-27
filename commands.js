@@ -310,6 +310,45 @@ var configCommands = {
 };
 
 var  frameCommands = {
+	arc: {
+		name: 'arc',
+		type: commandTypes.METHOD,
+		params: [
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT),
+			param ('r', paramTypes.FLOAT),
+			param ('sAngle', paramTypes.FLOAT),
+			param ('eAngle', paramTypes.FLOAT)
+		]
+	},
+	arc_to: {
+		name: 'arcTo',
+		type: commandTypes.METHOD,
+		params: [
+			param ('x1', paramTypes.FLOAT),
+			param ('y1', paramTypes.FLOAT),
+			param ('x2', paramTypes.FLOAT),
+			param ('y2', paramTypes.FLOAT),
+			param ('r', paramTypes.FLOAT)
+		]
+	},
+	begin_path: {
+		name: 'beginPath',
+		type: commandTypes.METHOD,
+		params: []
+	},
+	bezier_curve_to: {
+		name: 'bezierCurveTo',
+		type: commandTypes.METHOD,
+		params: [
+			param ('cp1x', paramTypes.FLOAT),
+			param ('cp1y', paramTypes.FLOAT),
+			param ('cp2x', paramTypes.FLOAT),
+			param ('cp2y', paramTypes.FLOAT),
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT)
+		]
+	},
 	clear_rect: {
 		name: 'clearRect',
 		type: commandTypes.METHOD,
@@ -319,6 +358,21 @@ var  frameCommands = {
 			param ('width', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
 			param ('height', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
 		]
+	},
+	clip: {
+		name: 'clip',
+		type: commandTypes.METHOD,
+		params: []
+	},
+	close_path: {
+		name: 'closePath',
+		type: commandTypes.METHOD,
+		params: []
+	},
+	fill: {
+		name: 'fill',
+		type: commandTypes.METHOD,
+		params: []
 	},
 	fill_style_color: {
 		name: 'fillStyle',
@@ -367,6 +421,14 @@ var  frameCommands = {
 			       paramTypes.STRING_ENUM (['bevel', 'round', 'miter']))
 		]
 	},
+	line_to: {
+		name: 'lineTo',
+		type: commandTypes.METHOD,
+		params: [
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT)
+		]
+	},
 	line_width: {
 		name: 'lineWidth',
 		type: commandTypes.PROPERTY,
@@ -380,7 +442,14 @@ var  frameCommands = {
 		params: [
 			param ('miter limit',
 			       paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
-
+		]
+	},
+	move_to: {
+		name: 'moveTo',
+		type: commandTypes.PROPERTY,
+		params: [
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT)
 		]
 	},
 	rect: {
@@ -421,6 +490,11 @@ var  frameCommands = {
 			param ('yOffset', paramTypes.FLOAT)
 		]
 	},
+	stroke: {
+		name: 'stroke',
+		type: commandTypes.METHOD,
+		params: []
+	},
 	stroke_rect: {
 		name: 'strokeRect',
 		type: commandTypes.METHOD,
@@ -452,6 +526,16 @@ var  frameCommands = {
 			param ('gradient', paramTypes.RADIAL_GRADIENT)
 		]
 	},
+	quadratic_curve_to: {
+		name: 'quadraticCurveTo',
+		type: commandTypes.METHOD,
+		params: [
+			param ('cpx', paramTypes.FLOAT),
+			param ('cpy', paramTypes.FLOAT),
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT)
+		]
+	}
 };
 
 var commands = {
