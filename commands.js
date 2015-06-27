@@ -348,6 +348,37 @@ var paramTypes = {
 
 			return ugly.images[name];
 		}
+	},
+	IMAGE_PATTERN: {
+		name: 'image pattern',
+		validate: function (argList_) {
+			if (argList_.length < 2)
+				return 'Image and repeat type must be specified';
+
+			var repeatTypes = paramTypes.STRING_ENUM (['repeat', 'repeat-x',
+			                                           'repeat-y', 'repeat']);
+
+			var res = paramTypes.IMAGE.validate (argList_) ||
+			          repeatTypes.validate (argList_);
+
+			if (res)
+				return res;
+
+			return undefined;
+		},
+		value: function (argList_) {
+			var repeatTypes = paramTypes.STRING_ENUM (['repeat', 'repeat-x',
+			                                           'repeat-y', 'repeat']);
+
+			var image = paramTypes.IMAGE.value (argList_);
+			var repeatType = repeatTypes.value (argList_);
+
+			// Ugh this is gross
+			if (ugly.context === undefined)
+				return undefined;
+
+			return ugly.context.createPattern (image, repeatType);
+		}
 	}
 };
 
@@ -474,6 +505,13 @@ var  frameCommands = {
 		type: commandTypes.PROPERTY,
 		params: [
 			param ('gradient', paramTypes.LINEAR_GRADIENT)
+		]
+	},
+	fill_style_image_pattern: {
+		name: 'fillStyle',
+		type: commandTypes.METHOD,
+		params: [
+			param ('image pattern', paramTypes.IMAGE_PATTERN),
 		]
 	},
 	fill_style_radial_gradient: {
@@ -653,6 +691,13 @@ var  frameCommands = {
 		type: commandTypes.PROPERTY,
 		params: [
 			param ('color', paramTypes.RGBA_COLOR)
+		]
+	},
+	stroke_style_image_pattern: {
+		name: 'strokStyleStyle',
+		type: commandTypes.METHOD,
+		params: [
+			param ('image pattern', paramTypes.IMAGE_PATTERN),
 		]
 	},
 	stroke_style_linear_gradient: {
