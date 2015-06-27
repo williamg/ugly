@@ -330,6 +330,24 @@ var paramTypes = {
 			esc = esc.replace (/\\\\/g, '\\');
 			return esc.substring (1, esc.length-1);
 		},
+	},
+	IMAGE: {
+		name: 'image',
+		validate: function (argList_) {
+			if (argList_.length < 1)
+				return 'Image name must be provided.';
+
+			argList_.shift ();
+			return undefined;
+		},
+		value: function (argList_) {
+			if (ugly.images === undefined)
+				return undefined;
+
+			var name = paramTypes.TEXT.value (argList_);
+
+			return ugly.images[name];
+		}
 	}
 };
 
@@ -362,6 +380,12 @@ var configCommands = {
 			param ('height', paramTypes.INT)
 		]
 	},
+	load_image: {
+		params: [
+			param ('name', paramTypes.TEXT),
+			param ('source', paramTypes.TEXT)
+		]
+	}
 };
 
 var  frameCommands = {
@@ -423,6 +447,15 @@ var  frameCommands = {
 		name: 'closePath',
 		type: commandTypes.METHOD,
 		params: []
+	},
+	draw_image: {
+		name: 'drawImage',
+		type: commandTypes.METHOD,
+		params: [
+			param ('image', paramTypes.IMAGE),
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT)
+		]
 	},
 	fill: {
 		name: 'fill',

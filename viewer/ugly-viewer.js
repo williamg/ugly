@@ -13,6 +13,7 @@ var ugly = {
 		'letterbox_color 0 0 0',
 		'canvas_size 640 480',
 	],
+	images: {},
 };
 
 // Main code ===================================================================
@@ -86,6 +87,19 @@ function canvasSize (command_) {
 	ugly.canvas.style.height = height;
 }
 
+function loadImage (command_) {
+	var argList = toArgList (command_);
+
+	var command = commands.configCommands[argList.shift ()];
+	var name = command.params[0].type.value (argList);
+	var source = command.params[1].type.value (argList);
+
+	var img = new Image ();
+	img.src = source;
+
+	ugly.images[name] = img;
+}
+
 // Executes all the commands in the queue
 function processQueuedCommands () {
 	for (var i = 0; i < ugly.queuedCommands.length; i++) {
@@ -114,6 +128,8 @@ function processConfigCommand (argsList_) {
 		letterboxColor (command);
 	} else if (name === 'canvas_size') {
 		canvasSize (command);
+	} else if (name === 'load_image') {
+		loadImage (command);
 	} else {
 		console.assert (false);
 	}
