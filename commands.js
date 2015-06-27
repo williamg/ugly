@@ -462,6 +462,35 @@ var  frameCommands = {
 			param ('height', paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
 		]
 	},
+	rotate: {
+		name: 'rotate',
+		type: commandTypes.METHOD,
+		params: [
+			param ('angle', paramTypes.FLOAT)
+		]
+	},
+	scale: {
+		name: 'scale',
+		type: commandTypes.METHOD,
+		params: [
+			param ('scaleWidth',
+			       paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE)),
+			param ('scaleHeight',
+			       paramTypes.BOUNDED_FLOAT (0, Number.MAX_VALUE))
+		]
+	},
+	set_transform: {
+		name: 'setTransform',
+		type: commandTypes.METHOD,
+		params: [
+			param ('a', paramTypes.FLOAT),
+			param ('b', paramTypes.FLOAT),
+			param ('c', paramTypes.FLOAT),
+			param ('d', paramTypes.FLOAT),
+			param ('e', paramTypes.FLOAT),
+			param ('f', paramTypes.FLOAT)
+		]
+	},
 	shadow_blur: {
 		name: 'shadowBlur',
 		type: commandTypes.PROPERTY,
@@ -524,6 +553,26 @@ var  frameCommands = {
 		type: commandTypes.PROPERTY,
 		params: [
 			param ('gradient', paramTypes.RADIAL_GRADIENT)
+		]
+	},
+	transform: {
+		name: 'transform',
+		type: commandTypes.METHOD,
+		params: [
+			param ('a', paramTypes.FLOAT),
+			param ('b', paramTypes.FLOAT),
+			param ('c', paramTypes.FLOAT),
+			param ('d', paramTypes.FLOAT),
+			param ('e', paramTypes.FLOAT),
+			param ('f', paramTypes.FLOAT)
+		]
+	},
+	translate: {
+		name: 'translate',
+		type: commandTypes.METHOD,
+		params: [
+			param ('x', paramTypes.FLOAT),
+			param ('y', paramTypes.FLOAT)
 		]
 	},
 	quadratic_curve_to: {
