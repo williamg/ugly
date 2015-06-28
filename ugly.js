@@ -87,6 +87,12 @@ function connectToViewer (callback_) {
 		log.info ('Viewer connected');
 
 		ugly.socket = socket_;
+
+		ugly.socket.on ('close', function () {
+			log.info ('Viewer disconnected');
+			ugly.socket = undefined;
+		});
+
 		callback_ ();
 	});
 }
