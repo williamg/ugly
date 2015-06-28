@@ -12,7 +12,9 @@ var ugly = {
 	defaultConfig: [
 		'letterbox_color 0 0 0',
 		'canvas_size 640 480',
+		'fullscreen true',
 	],
+	isFullscreen: true,
 	images: {},
 };
 
@@ -83,8 +85,6 @@ function canvasSize (command_) {
 
 	ugly.canvas.width = width;
 	ugly.canvas.height = height;
-	ugly.canvas.style.width = width;
-	ugly.canvas.style.height = height;
 }
 
 function loadImage (command_) {
@@ -98,6 +98,52 @@ function loadImage (command_) {
 	img.src = source;
 
 	ugly.images[name] = img;
+}
+
+function fullscreen (command_) {
+	var argList = toArgList (command_);
+	ugly.isFullscreen = argList[1] === 'true';
+
+	resize ();
+
+	window.onresize = resize;
+}
+
+function resize () {
+	var pWidth = window.innerWidth;
+	var pHeight = window.innerHeight;
+	var cWidth =  pWidth;
+	var cHeight = pHeight;
+	var verticalPadding = 0;
+	var horizontalPadding = 0;
+
+	ugly.canvas.style.position = "absolute";
+
+	if (! ugly.isFullscreen) {
+		cWidth = ugly.canvas.width;
+		cHeight = ugly.canvas.height;
+		horizontalPadding = (pWidth - cWidth) / 2;
+		verticalPadding = (pHeight - cHeight) / 2;
+	} else {
+		var aspectRatio = ugly.canvas.width / ugly.canvas.height;
+
+		// The canvas will be the same size as the window in at least one
+		// dimension. If the window is too short, use the full height and adjust
+		// the width. If the window is too wide, use the full width and adjust
+		// the height.
+		if (pWidth / aspectRatio > pHeight) {
+			cWidth = pHeight * aspectRatio;
+			horizontalPadding = (pWidth - cWidth) / 2;
+		} else {
+			cHeight = cWidth / aspectRatio;
+			verticalPadding = (pHeight - cHeight) / 2;
+		}
+	}
+
+    ugly.canvas.style.width = cWidth + 'px';
+    ugly.canvas.style.height = cHeight + 'px';
+    ugly.canvas.style.top = verticalPadding + 'px';
+    ugly.canvas.style.left = horizontalPadding + 'px';
 }
 
 // Executes all the commands in the queue
@@ -130,6 +176,8 @@ function processConfigCommand (argsList_) {
 		canvasSize (command);
 	} else if (name === 'load_image') {
 		loadImage (command);
+	} else if (name === 'fullscreen') {
+		fullscreen (command);
 	} else {
 		console.assert (false);
 	}
