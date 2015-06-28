@@ -28,6 +28,6 @@
     "ws": "^0.7.2"
   },
   "bin": {
-    "ugly": "bin/ugly.bin.js"
+    "ugly": "ugly.js"
   }
 }

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Requires ====================================================================
 var pkg = require ('./package.json');
 var log = require ('./lib/logging.js');
