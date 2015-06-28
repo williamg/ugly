@@ -1,7 +1,7 @@
 // Requires ====================================================================
 var pkg = require ('./package.json');
-var log = require ('./logging.js');
-var commands = require ('./commands.js');
+var log = require ('./lib/logging.js');
+var commands = require ('./lib/commands.js');
 var express = require ('express');
 var WebSocketServer = require ('ws').Server;
 
