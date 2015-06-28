@@ -1,6 +1,6 @@
 {
   "name": "ugly",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A universal graphics library.",
   "main": "ugly.js",
   "scripts": {
