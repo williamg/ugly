@@ -4,7 +4,7 @@
   "description": "A universal graphics library.",
   "main": "ugly.js",
   "scripts": {
-    "test": "./test"
+    "test": "./tests/test"
   },
   "repository": {
     "type": "git",

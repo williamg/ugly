@@ -5,7 +5,7 @@ var globals = {
 	console: console
 };
 
-var commands = sandbox ('commands.js', globals);
+var commands = sandbox ('lib/commands.js', globals);
 var paramTypes = commands.paramTypes;
 
 // Parameter validation ========================================================
