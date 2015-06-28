@@ -25,6 +25,16 @@ To use **ugly**, make sure your application outputs text according to the
 
 Now, head to `localhost:3333/viewer/` and enjoy the show!
 
+### Options
+There are a few command line options available:
+- `-p`: Change the port used to  serve the client (default is 3333). (*Make sure this is not set to `4444` as that port is the hard-coded WebSocket port*)
+- `-l`: Change where the log file is written (default is 'ugly.log')
+- `-r`: Limit the rate of the viewer. If this is 60, for example, the server will try to send frames at approximately 60FPS. This is helpful if you have a pre-generated ugly script:
+
+        cat uglyScript | ugly -r 60
+
+    avoid this option if you are producing your script in real-time, though.
+
 ### Commands
 To learn more about the commands supported by **ugly**, please refer to the wiki page:
 [Commands](https://github.com/williamg/ugly/wiki/Commands)
