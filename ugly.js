@@ -25,11 +25,13 @@ var CHUNK_HANDLERS = {
 var ugly = {
 	viewerPort: 3333,
 	logFile: 'ugly.jog',
+	rate: undefined,
 	server: new WebSocketServer ({ port: SOCKET_PORT}),
 	socket: undefined,
 	currentChunk: undefined,
 	lineHandler: undefined,
-	configChunk: []
+	configChunk: [],
+	unhandledLines: []
 };
 
 
@@ -39,13 +41,26 @@ var ugly = {
 function main (config_) {
 	ugly.viewerPort = config_.viewerPort || ugly.viewerPort;
 	ugly.logFile = config_.logFile || ugly.logFile;
+	ugly.rate = config_.rate;
 
 	log.initLog (ugly.logFile, VERSION);
 	log.info ("Initializing...");
 
-	readlines (handleLine);
+	if (ugly.rate && ugly.rate >= 0) {
+		readlines (function (line_) {
+			ugly.unhandledLines.push (line_);
+		});
+
+		setInterval (function () {
+			handleLine (ugly.unhandledLines.shift ());
+		}, 1000 / ugly.rate);
+
+	} else {
+		readlines (handleLine);
+	}
+
 	serveViewer ();
-	
+
 	// Once a viewer connects, we need to send the most recent config chunk if
 	// there is one
 	connectToViewer (function () {
@@ -200,11 +215,15 @@ var args = process.argv.slice (2);
 var config = {};
 var viewerPortIndex = args.indexOf ('-p');
 var logFileIndex = args.indexOf ('-l');
+var rateIndex = args.indexOf ('-r');
 
 if (viewerPortIndex !== -1)
 	config.viewerPort = args[viewerPortIndex + 1];
 
 if (logFileIndex !== -1)
 	config.logFile = args[logFileIndex + 1];
+
+if (rateIndex !== -1)
+	config.rate = args[rateIndex + 1];
 
 main (config);
