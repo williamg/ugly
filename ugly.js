@@ -10,9 +10,7 @@ var WebSocketServer = require ('ws').Server;
 
 // Constants ===================================================================
 var VERSION         = pkg.version;
-var LOG_FILE        = 'ugly.log';
-var VIEWER_PORT     = 3333;
-var VIEWER_ADDR     = 'localhost:' + VIEWER_PORT;
+var VIEWER_PREFIX   = 'localhost:';
 var SOCKET_PORT     = 4444;
 var CHUNK_HANDLERS = {
 	'CONFIG': function (line_) {
@@ -25,6 +23,8 @@ var CHUNK_HANDLERS = {
 
 // Globals =====================================================================
 var ugly = {
+	viewerPort: 3333,
+	logFile: 'ugly.jog',
 	server: new WebSocketServer ({ port: SOCKET_PORT}),
 	socket: undefined,
 	currentChunk: undefined,
@@ -36,8 +36,11 @@ var ugly = {
 // Main code ==================================================================
 
 // Start listening on stdin
-function main () {
-	log.initLog (LOG_FILE, VERSION);
+function main (config_) {
+	ugly.viewerPort = config_.viewerPort || ugly.viewerPort;
+	ugly.logFile = config_.logFile || ugly.logFile;
+
+	log.initLog (ugly.logFile, VERSION);
 	log.info ("Initializing...");
 
 	readlines (handleLine);
@@ -58,9 +61,9 @@ function serveViewer () {
 
 	// Need to do better than this
 	app.use (express.static (__dirname));
-	app.listen (VIEWER_PORT);
+	app.listen (ugly.viewerPort);
 
-	log.info ('Serving viewer at ' + VIEWER_ADDR);
+	log.info ('Serving viewer at ' + VIEWER_PREFIX + ugly.viewerPort);
 }
 
 // Attempt to establish a WebSocket connection with the viewer
@@ -192,5 +195,16 @@ function validateCommand (line_, chunkName_, chunkCommands_) {
 }
 
 
-// Entry point =================================================================
-main ();
+// Parse options ===============================================================
+var args = process.argv.slice (2);
+var config = {};
+var viewerPortIndex = args.indexOf ('-p');
+var logFileIndex = args.indexOf ('-l');
+
+if (viewerPortIndex !== -1)
+	config.viewerPort = args[viewerPortIndex + 1];
+
+if (logFileIndex !== -1)
+	config.logFile = args[logFileIndex + 1];
+
+main (config);
