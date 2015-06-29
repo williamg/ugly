@@ -11,7 +11,6 @@ var WebSocketServer = require ('ws').Server;
 
 // Constants ===================================================================
 var VERSION         = pkg.version;
-var VIEWER_PREFIX   = 'localhost:';
 var SOCKET_PORT     = 4444;
 var CHUNK_HANDLERS = {
 	'CONFIG': function (line_) {
@@ -24,22 +23,22 @@ var CHUNK_HANDLERS = {
 
 // Globals =====================================================================
 var ugly = {
-	viewerPort: 3333,
+	currentChunk: undefined,
+	configChunk: [],
+	lineHandler: undefined,
 	logFile: 'ugly.log',
 	rate: undefined,
 	server: new WebSocketServer ({ port: SOCKET_PORT}),
 	socket: undefined,
-	currentChunk: undefined,
-	lineHandler: undefined,
-	configChunk: [],
-	unhandledLines: []
+	viewerPort: 3333,
 };
 
 
 // Main code ==================================================================
 
-// Start listening on stdin
+// Entry point. Starts the application
 function main (config_) {
+	// Set options
 	ugly.viewerPort = config_.viewerPort || ugly.viewerPort;
 	ugly.logFile = config_.logFile || ugly.logFile;
 	ugly.rate = config_.rate;
@@ -47,19 +46,25 @@ function main (config_) {
 	log.initLog (ugly.logFile, VERSION);
 	log.info ("Initializing...");
 
-	if (ugly.rate && ugly.rate >= 0) {
+	// If a positive rate is specified, we will not send more than rate frames
+	// per second. If we receive a frame sooner than we are ready to send one,
+	// we queue it and send it at the next interval
+	if (ugly.rate && ugly.rate > 0) {
+		var unhandledLines = [];
+	
 		readlines (function (line_) {
-			ugly.unhandledLines.push (line_);
+			unhandledLines.push (line_);
 		});
 
 		setInterval (function () {
-			handleLine (ugly.unhandledLines.shift ());
+			handleLine (unhandledLines.shift ());
 		}, 1000 / ugly.rate);
 
 	} else {
 		readlines (handleLine);
 	}
 
+	// Serve the static viewer webpage
 	serveViewer ();
 
 	// Once a viewer connects, we need to send the most recent config chunk if
@@ -79,11 +84,13 @@ function serveViewer () {
 	app.use (express.static (__dirname));
 	app.listen (ugly.viewerPort);
 
-	log.info ('Serving viewer at ' + VIEWER_PREFIX + ugly.viewerPort);
+	log.info ('Serving viewer at localhost:' + ugly.viewerPort);
 }
 
 // Attempt to establish a WebSocket connection with the viewer
 function connectToViewer (callback_) {
+	console.assert (typeof (callback_) === 'function');
+
 	ugly.server.on ('connection', function (socket_) {
 		log.info ('Viewer connected');
 
@@ -221,6 +228,7 @@ function validateCommand (line_, chunkName_, chunkCommands_) {
 // TODO: The following command line options need to be implemented:
 // - Verbosity
 // - Configurable web socket port
+// - Accept input from file rather than stdin
 
 program
 	.version (VERSION)
