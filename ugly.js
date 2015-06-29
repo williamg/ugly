@@ -23,7 +23,6 @@ var CHUNK_HANDLERS = {
 
 // Globals =====================================================================
 var ugly = {
-	accumulator: 0,
 	currentChunk: undefined,
 	chunks: {
 		CONFIG: [],
@@ -31,7 +30,7 @@ var ugly = {
 	},
 	lineHandler: undefined,
 	logFile: 'ugly.log',
-	rate: 1000,
+	rate: undefined,
 	server: new WebSocketServer ({ port: SOCKET_PORT}),
 	socket: undefined,
 	viewerPort: 3333,
