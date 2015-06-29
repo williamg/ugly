@@ -13,10 +13,10 @@ var WebSocketServer = require ('ws').Server;
 var VERSION         = pkg.version;
 var SOCKET_PORT     = 4444;
 var CHUNK_HANDLERS = {
-	'CONFIG': function (line_) {
+	CONFIG: function (line_) {
 		validateCommand (line_, 'CONFIG', commands.configCommands);
 	},
-	'FRAME': function (line_) {
+	FRAME: function (line_) {
 		validateCommand (line_, 'FRAME', commands.frameCommands);
 	}
 };
@@ -24,7 +24,10 @@ var CHUNK_HANDLERS = {
 // Globals =====================================================================
 var ugly = {
 	currentChunk: undefined,
-	configChunk: [],
+	chunks: {
+		CONFIG: [[]],
+		FRAME: [[]],
+	},
 	lineHandler: undefined,
 	logFile: 'ugly.log',
 	rate: undefined,
@@ -70,8 +73,8 @@ function main (config_) {
 	// Once a viewer connects, we need to send the most recent config chunk if
 	// there is one
 	connectToViewer (function () {
-		for (var i = 0; i < ugly.configChunk.length; i++) {
-			sendData (ugly.configChunk[i]);
+		for (var i = 0; i < ugly.chunks.CONFIG[0].length; i++) {
+			sendData (ugly.chunks.CONFIG[0][i]);
 		}
 	});
 }
@@ -169,6 +172,8 @@ function handleLine (line_) {
 			ugly.currentChunk = chunkName;
 			ugly.lineHandler = CHUNK_HANDLERS[chunkName];
 
+			ugly.chunks[ugly.currentChunk].unshift ([]);
+
 			break;
 		// Chunk termination
 		} else if (startsWith ('$END_' + chunkName, line_)) {
@@ -176,8 +181,7 @@ function handleLine (line_) {
 				log.error ('Found ' + chunkName + ' terminator in non-' +
 				           chunkName + ' chunk.');
 
-			if (ugly.currentChunk === 'CONFIG')
-				ugly.configChunk.push (line_);
+			ugly.chunks[ugly.currentChunk][0].unshift (line_);
 
 			ugly.lineHandler = undefined;
 			ugly.currentChunk = undefined;
@@ -189,8 +193,9 @@ function handleLine (line_) {
 	if (! startsWith ('$', line_))
 			ugly.lineHandler (line_);
 
-	if (ugly.currentChunk === 'CONFIG')
-		ugly.configChunk.push (line_);
+	// Save this command
+	if (ugly.currentChunk !== undefined)
+		ugly.chunks[ugly.currentChunk][0].unshift (line_);
 
 	// We send everything, though
 	sendData (line_);
