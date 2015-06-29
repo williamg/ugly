@@ -174,6 +174,11 @@ function handleLine (line_) {
 
 			ugly.chunks[ugly.currentChunk].unshift ([]);
 
+			if (ugly.chunks.CONFIG.length > 1 ||
+			    (chunkName === 'CONFIG' && ugly.chunks.FRAME.length > 0))
+				log.error ('Unexpected CONFIG chunk. At most 1 CONFIG chunk ' +
+				           'is allowed and it must be the first chunk.');
+
 			break;
 		// Chunk termination
 		} else if (startsWith ('$END_' + chunkName, line_)) {
