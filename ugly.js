@@ -5,6 +5,7 @@ var pkg = require ('./package.json');
 var log = require ('./lib/logging.js');
 var commands = require ('./lib/commands.js');
 var express = require ('express');
+var program = require ('commander');
 var WebSocketServer = require ('ws').Server;
 
 
@@ -24,7 +25,7 @@ var CHUNK_HANDLERS = {
 // Globals =====================================================================
 var ugly = {
 	viewerPort: 3333,
-	logFile: 'ugly.jog',
+	logFile: 'ugly.log',
 	rate: undefined,
 	server: new WebSocketServer ({ port: SOCKET_PORT}),
 	socket: undefined,
@@ -217,19 +218,16 @@ function validateCommand (line_, chunkName_, chunkCommands_) {
 
 
 // Parse options ===============================================================
-var args = process.argv.slice (2);
-var config = {};
-var viewerPortIndex = args.indexOf ('-p');
-var logFileIndex = args.indexOf ('-l');
-var rateIndex = args.indexOf ('-r');
+// TODO: The following command line options need to be implemented:
+// - Verbosity
+// - Configurable web socket port
 
-if (viewerPortIndex !== -1)
-	config.viewerPort = args[viewerPortIndex + 1];
+program
+	.version (VERSION)
+	.description ('Launch the ugly server and serve the viewer')
+	.option ('-r, --rate <n>', 'The max frame-rate', parseInt)
+	.option ('-p, --viewer-port <n>', 'The port on which to serve the viewer', parseInt)
+	.option ('-l, --log-file <path>', 'The location to write log files')
+	.parse (process.argv);
 
-if (logFileIndex !== -1)
-	config.logFile = args[logFileIndex + 1];
-
-if (rateIndex !== -1)
-	config.rate = args[rateIndex + 1];
-
-main (config);
+main (program);
