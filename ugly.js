@@ -280,9 +280,13 @@ function validateCommand (line_, chunkName_, chunkCommands_) {
 program
 	.version (VERSION)
 	.description ('Launch the ugly server and serve the viewer')
-	.option ('-r, --rate <n>', 'The max frame-rate', parseInt)
-	.option ('-p, --viewer-port <n>', 'The port on which to serve the viewer', parseInt)
-	.option ('-l, --log-file <path>', 'The location to write log files')
+	.option ('-r, --rate <n>',
+	         'The max frame-rate. (10-120 for best results, default 120)',
+	         parseInt)
+	.option ('-p, --viewer-port <n>',
+	         'The port on which to serve the viewer (default 3333)', parseInt)
+	.option ('-l, --log-file <path>',
+	         'The location to write log files (default "ugly.js"')
 	.parse (process.argv);
 
 main (program);
