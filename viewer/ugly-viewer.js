@@ -218,7 +218,7 @@ function handleLine (line_) {
 	if (! startsWith ('$', line_))
 		ugly.queuedCommands.push (line_);
 	else if (startsWith ('$END_', line_)) {
-		processQueuedCommands ();
+		requestAnimationFrame (processQueuedCommands);
 	}
 }
 
