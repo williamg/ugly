@@ -27,13 +27,13 @@ Now, head to `localhost:3333/viewer/` and enjoy the show!
 
 ### Options
 There are a few command line options available:
-- `-p`: Change the port used to  serve the client (default is 3333). (*Make sure this is not set to `4444` as that port is the hard-coded WebSocket port*)
-- `-l`: Change where the log file is written (default is 'ugly.log')
-- `-r`: Limit the rate of the viewer. If this is 60, for example, the server will try to send frames at approximately 60FPS. This is helpful if you have a pre-generated ugly script:
+- `-p`: Change the port used to  serve the client (default is `3333`). (*Make sure this is not set to `4444` as that port is the hard-coded WebSocket port*)
+- `-l`: Change where the log file is written (default is `'ugly.log'`)
+- `-r`: The framerate at which the server will try to send frames. (default is `120`) Note that the rate at which ugly sends frames has nothing to do with the rate it receives commands. So it can receive all the commands at once and still render them  at the right speed. This is helpful if you have a pre-generated ugly script:
 
         cat uglyScript | ugly -r 60
 
-    avoid this option if you are producing your script in real-time, though.
+    If you are generating commands in realtime, as long as the rate is a positive multiple of your actual framerate, ugly will keep up with your program and render in as-close-to-realtime as it can.
 
 ### Commands
 To learn more about the commands supported by **ugly**, please refer to the wiki page:
