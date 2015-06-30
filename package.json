@@ -2,9 +2,10 @@
   "name": "ugly",
   "version": "1.0.0",
   "description": "A universal graphics library.",
-  "main": "ugly.js",
+  "main": "bin/launcher.js",
   "scripts": {
-    "test": "./tests/test"
+    "test": "./tests/test",
+    "start": "bin/launcher.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,6 @@
     "ws": "^0.7.2"
   },
   "bin": {
-    "ugly": "ugly.js"
+    "ugly": "bin/launcher.js"
   }
 }
