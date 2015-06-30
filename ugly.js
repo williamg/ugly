@@ -13,26 +13,23 @@ var WebSocketServer = require ('ws').Server;
 var VERSION         = pkg.version;
 var SOCKET_PORT     = 4444;
 var CHUNK_HANDLERS = {
-	CONFIG: function (line_) {
-		validateCommand (line_, 'CONFIG', commands.configCommands);
-	},
-	FRAME: function (line_) {
-		validateCommand (line_, 'FRAME', commands.frameCommands);
-	}
+	CONFIG: handleConfigLine,
+	FRAME: handleFrameLine,
 };
 
 // Globals =====================================================================
 var ugly = {
+	accumulator: 0,
 	currentChunk: undefined,
-	chunks: {
-		CONFIG: [],
-		FRAME: [],
-	},
+	configChunk: undefined,
+	frameChunks: [],
+	lastFrame: Date.now (),
 	lineHandler: undefined,
 	logFile: 'ugly.log',
-	rate: undefined,
+	rate: 120,
 	server: new WebSocketServer ({ port: SOCKET_PORT}),
 	socket: undefined,
+	started: false,
 	viewerPort: 3333,
 };
 
@@ -44,28 +41,10 @@ function main (config_) {
 	// Set options
 	ugly.viewerPort = config_.viewerPort || ugly.viewerPort;
 	ugly.logFile = config_.logFile || ugly.logFile;
-	ugly.rate = config_.rate;
+	ugly.rate = config_.rate || ugly.rate;
 
 	log.initLog (ugly.logFile, VERSION);
 	log.info ("Initializing...");
-
-	// If a positive rate is specified, we will not send more than rate frames
-	// per second. If we receive a frame sooner than we are ready to send one,
-	// we queue it and send it at the next interval
-	if (ugly.rate && ugly.rate > 0) {
-		var unhandledLines = [];
-	
-		readlines (function (line_) {
-			unhandledLines.push (line_);
-		});
-
-		setInterval (function () {
-			handleLine (unhandledLines.shift ());
-		}, 1000 / ugly.rate);
-
-	} else {
-		readlines (handleLine);
-	}
 
 	// Serve the static viewer webpage
 	serveViewer ();
@@ -73,16 +52,15 @@ function main (config_) {
 	// Once a viewer connects, we need to send the most recent config chunk if
 	// there is one
 	connectToViewer (function () {
-		for (var i = 0; i < ugly.chunks.CONFIG[0].length; i++) {
-			sendData (ugly.chunks.CONFIG[0][i]);
-		}
+		sendChunk (ugly.configChunk);
 	});
+
+	readlines (handleLine);
 }
 
 // Serve the static viewer
 function serveViewer () {
 	var app = express ();
-
 	// Need to do better than this
 	app.use (express.static (__dirname));
 	app.listen (ugly.viewerPort);
@@ -142,17 +120,58 @@ function startsWith (prefix_, string_) {
 	return string_.indexOf (prefix_) === 0;
 }
 
-// Write data_ to the client via websockets
-function sendData (data_) {
-	console.assert (typeof (data_) === 'string');
+// This function makes sure that we send frames as close to the specified rate
+// as possible.
+//
+// Suppose the user specifies a rate of 10. So we should be sending
+// a frame every 100ms. Unfortunately, Javascript can't guarantee that this
+// function will be called in exactly 100ms. Suppose it's called in 102ms.
+// So 102ms has elapsed, but we're supposed to send a frame every 100ms. Well,
+// we see that enough time has elapsed for us to send 1 frame, so we do. That
+// leaves 2ms unaccounted for, though, so those are added to an accumulator.
+// Now suppose on the next go round the function is called in 98ms. Normally,
+// that's not enough time to send a new frame, but we have those 2ms left over
+// so we add those in to get 100ms and we can send a new frame. Our accumulator
+// is then set back to 0.
+function sendFrame () {
+	var time = Date.now ();
+	var diff = time - ugly.lastFrame;
 
+	// This is the total amount of time that hasn't been accounted for
+	var total = diff + ugly.accumulator;
+
+	var freq = 1000 / ugly.rate;
+	var rem = (diff + ugly.accumulator) % freq;
+	var frames = (total - rem) / freq;
+	frames = Math.min (frames, ugly.frameChunks.length);
+
+	// Timer to send the next frame
+	setTimeout (sendFrame, freq);
+
+	// Not enough time elapsed to send a new frame
+	if (frames === 0)
+		return;
+
+	ugly.accumulator = rem;
+	ugly.lastFrame = time;
+
+	// Don't try to send if the client hasn't connected
 	if (ugly.socket === undefined)
 		return;
 
-	ugly.socket.send (data_, function (err_) {
-		if (err_)
-			log.error (err_);
-	});
+	var frameToSend;
+	for (var i = 0; i < frames; ++i)
+		frameToSend = ugly.frameChunks.shift ();
+
+	sendChunk (frameToSend);
+}
+
+function sendChunk (chunk_) {
+	console.assert (ugly.socket !== undefined);
+
+	for (var l in chunk_) {
+		ugly.socket.send (chunk_[l], log.error);
+	}
 }
 
 // Handle receving a line as input
@@ -172,13 +191,6 @@ function handleLine (line_) {
 			ugly.currentChunk = chunkName;
 			ugly.lineHandler = CHUNK_HANDLERS[chunkName];
 
-			ugly.chunks[ugly.currentChunk].unshift ([]);
-
-			if (ugly.chunks.CONFIG.length > 1 ||
-			    (chunkName === 'CONFIG' && ugly.chunks.FRAME.length > 0))
-				log.error ('Unexpected CONFIG chunk. At most 1 CONFIG chunk ' +
-				           'is allowed and it must be the first chunk.');
-
 			break;
 		// Chunk termination
 		} else if (startsWith ('$END_' + chunkName, line_)) {
@@ -186,29 +198,54 @@ function handleLine (line_) {
 				log.error ('Found ' + chunkName + ' terminator in non-' +
 				           chunkName + ' chunk.');
 
-			ugly.chunks[ugly.currentChunk][0].unshift (line_);
-
-			ugly.lineHandler = undefined;
 			ugly.currentChunk = undefined;
 			break;
 		}
 	}
 
-	// Only handle commands, not declarations or terminations
-	if (! startsWith ('$', line_))
-			ugly.lineHandler (line_);
+	ugly.lineHandler (line_);
+}
 
-	// Save this command
-	if (ugly.currentChunk !== undefined)
-		ugly.chunks[ugly.currentChunk][0].unshift (line_);
+function handleConfigLine (line_) {
+	if (startsWith ('$CONFIG', line_)) {
+		if (ugly.configChunk !== undefined) {
+			log.error ('Unexpected CONFIG chunk. At most 1 CONFIG chunk ' +
+			          'is allowed and it must be the first chunk.');
+		}
 
-	// We send everything, though
-	sendData (line_);
+		ugly.configChunk = [];
+	}
+
+	validateCommand (line_, 'CONFIG', commands.configCommands);
+	ugly.configChunk.push (line_);
+
+	if (startsWith ('$END_CONFIG', line_) && ugly.socket !== undefined)
+		sendChunk (ugly.configChunk);
+}
+
+function handleFrameLine (line_) {
+	if (startsWith ('$FRAME', line_)) {
+		ugly.frameChunks.push ([]);
+	}
+
+	var index = ugly.frameChunks.length - 1;
+
+	validateCommand (line_, 'FRAME', commands.frameCommands);
+	ugly.frameChunks[index].push (line_);
+
+	if (startsWith ('$END_FRAME', line_) && ! ugly.started) {
+		ugly.started = true;
+		sendFrame ();
+	}
 }
 
 // Takes the given line and validates that it matches one of the commands in
 // chunkCommands_
 function validateCommand (line_, chunkName_, chunkCommands_) {
+	if (startsWith ('$' + chunkName_, line_) ||
+	    startsWith ('$END_' + chunkName_, line_))
+		return;
+
 	var argList = line_.match (/\S+/g);
 
 	var commandName = argList.shift ();
