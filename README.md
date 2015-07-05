@@ -34,6 +34,11 @@ There are a few command line options available:
         cat uglyScript | ugly -r 60
 
     If you are generating commands in realtime, as long as the rate is a positive multiple of your actual framerate, ugly will keep up with your program and render in as-close-to-realtime as it can.
+- `-v`: Set the verbosity (0-3):
+    - 0: Nothing logged to file or console
+    - 1: Nothing logged to console, everything logged to file
+    - 2: Errors logged to console, everything logged to file (default)
+    - 3: Everything logged to file and console
 
 ### Commands
 To learn more about the commands supported by **ugly**, please refer to the wiki page:

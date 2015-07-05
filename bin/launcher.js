@@ -23,6 +23,9 @@ program
 	         parseInt)
 	.option ('-l, --log-file <path>',
 	         'The location to write log files (default "ugly.js")')
+	.option ('-v, --verbosity <n>',
+	         'The verbosity level (0-3)',
+	         parseInt)
 	.parse (process.argv);
 
 new UglyServer (program);
