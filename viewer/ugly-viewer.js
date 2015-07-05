@@ -1,7 +1,4 @@
 /* global commands */
-// Constants ===================================================================
-var SOCKET_PORT = 4444;
-var SOCKET_SERVER = 'ws://127.0.0.1:' + SOCKET_PORT;
 
 // Globals =====================================================================
 var ugly = {
@@ -27,9 +24,40 @@ function initCanvas () {
 	processQueuedCommands ();
 }
 
-function initConnection () {
-	console.log ('Attempting to connect to websocket server ' + SOCKET_SERVER);
-	var socket = new WebSocket (SOCKET_SERVER);
+function connect () {
+	getWebsocketPort (initConnection);
+}
+
+function getWebsocketPort (callback_) {
+	var xmlHttp = new XMLHttpRequest ();
+
+	xmlHttp.onreadystatechange = function () {
+		if (xmlHttp.readyState !== 4)
+			return;
+
+		if (xmlHttp.status === 200) {
+			var res = JSON.parse (xmlHttp.responseText);
+			console.log ('Received port: ' + res.port);
+			return callback_ (res.port);
+		} else {
+			console.error ('Failed to retrieve websocket port, retrying in 5 ' +
+			               'seconds.');
+			setTimeout (connect, 5000);
+			return;
+		}
+	};
+
+	xmlHttp.open ('GET', '/port', true);
+
+	console.log ('Getting websocket port');
+	xmlHttp.send ();
+}
+
+function initConnection (port_) {
+	var socketServer = 'ws://127.0.0.1:' + port_;
+
+	console.log ('Attempting to connect to websocket server ' + socketServer);
+	var socket = new WebSocket (socketServer);
 
 	socket.onerror = function (err_) {
 		console.log (err_);
@@ -40,8 +68,8 @@ function initConnection () {
 	};
 
 	socket.onclose = function () {
-		console.log ('Socket closed, attempting to reconnect in 5 seconds...');
-		setTimeout (initConnection, 5 * 1000);
+		console.error ('Socket closed, attempting to reconnect in 5 seconds.');
+		setTimeout (connect, 5000);
 	};
 }
 
@@ -225,5 +253,5 @@ function handleLine (line_) {
 // Entry point =================================================================
 (function () {
 	initCanvas ();
-	initConnection ();
+	connect ();
 }) ();

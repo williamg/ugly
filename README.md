@@ -39,6 +39,8 @@ There are a few command line options available:
     - 1: Nothing logged to console, everything logged to file
     - 2: Errors logged to console, everything logged to file (default)
     - 3: Everything logged to file and console
+- `-s`: Set the websocket port. Make sure this is different from the port used
+to server the viewer (default is `4444`)
 
 ### Commands
 To learn more about the commands supported by **ugly**, please refer to the wiki page:

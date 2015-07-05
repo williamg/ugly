@@ -7,8 +7,6 @@ var program = require ('commander');
 
 // Parse options ===============================================================
 // TODO: The following command line options need to be implemented:
-// - Verbosity
-// - Configurable web socket port
 // - Accept input from file rather than stdin? Not sure about this one anymore,
 //   because you could always just `tail -f file.txt | ugly`
 
@@ -26,6 +24,9 @@ program
 	.option ('-v, --verbosity <n>',
 	         'The verbosity level (0-3)',
 	         parseInt)
+	.option ('-s, --socket-port <n>',
+	         'The port on which to deploy websockets (default 4444, must be ' +
+	         'different from viewer port')
 	.parse (process.argv);
 
 new UglyServer (program);
