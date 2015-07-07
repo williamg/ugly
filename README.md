@@ -11,7 +11,11 @@ commands in real-time and forwards them via WebSockets  to a local Javascript cl
 HTML5 canvas for your viewing pleasure.
 
 ## Installation
-Simply clone the repo, and install:
+Install with npm:
+
+    npm install -g ugly
+
+Or clone the repo, and install:
 
     git clone https://github.com/williamg/ugly.git
     cd ugly
