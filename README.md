@@ -52,7 +52,7 @@ If you have python:
 
 If you don't (or if you do and don't want to use it)
 
-    python examples/midpointDisplacementOutput.txt | ugly -r 1
+    cat examples/midpointDisplacementOutput.txt | ugly -r 1
 
 
 ### Commands
