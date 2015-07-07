@@ -42,6 +42,19 @@ There are a few command line options available:
 - `-s`: Set the websocket port. Make sure this is different from the port used
 to server the viewer (default is `4444`)
 
+### Examples
+There's an example included in the `examples` directory. You can run it
+in either of the following ways:
+
+If you have python:
+
+    python examples/midpointDisplacement.py | ugly
+
+If you don't (or if you do and don't want to use it)
+
+    python examples/midpointDisplacementOutput.txt | ugly -r 1
+
+
 ### Commands
 To learn more about the commands supported by **ugly**, please refer to the wiki page:
 [Commands](https://github.com/williamg/ugly/wiki/Commands)
