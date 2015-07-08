@@ -75,3 +75,7 @@ Please adhere to existing style as much as possible:
 - <= 80 character lines
 - Spaces before parentheses
 
+### Contributors
+Special thanks to those who have helped improve **ugly**:
+- [lleszczynski](https://github.com/lleszczynski) - Added Conway's Game of Life example
+
