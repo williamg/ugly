@@ -62,3 +62,16 @@ If you don't (or if you do and don't want to use it)
 ### Commands
 To learn more about the commands supported by **ugly**, please refer to the wiki page:
 [Commands](https://github.com/williamg/ugly/wiki/Commands)
+
+## Contributing
+Pull requests are welcome and encouraged! Potential features that aren't yet implemented:
+- Support for directly creating and manipulating `imageData`
+- Some way to capture input from the viewer and pipe it back to the server so it can be made accessible in real-time to the original application
+- Clever ways of compressing the amount of data sent from the server to the client (even just sending all the commands in one `send` as opposed to one `send` per line may help, or it may make things worse)
+
+### Style
+Please adhere to existing style as much as possible:
+- 4-space tabs for indentation, spaces for alignment
+- <= 80 character lines
+- Spaces before parentheses
+
