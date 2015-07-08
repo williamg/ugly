@@ -1,6 +1,6 @@
 # ugly
 
-Ugly is a light-weight language-agnostic graphics library.
+Ugly is a light-weight language-agnostic 2D graphics library.
 
 **Why does this exist?**
 - The canvas API is very nice, but Javascript isn't as powerful as low-level languages like C
