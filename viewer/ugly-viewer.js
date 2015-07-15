@@ -202,6 +202,7 @@ function processConfigCommand (argsList_) {
 		letterboxColor (command);
 	} else if (name === 'canvas_size') {
 		canvasSize (command);
+		resize ();
 	} else if (name === 'load_image') {
 		loadImage (command);
 	} else if (name === 'fullscreen') {
