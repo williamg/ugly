@@ -191,6 +191,10 @@ function processQueuedCommands () {
 	}
 	// Empty the queue
 	ugly.queuedCommands = [];
+
+	// Write canvas data
+	var dataURL = ugly.canvas.toDataURL ();
+	canvas.setAttribute ("data", dataURL);
 }
 
 // Since config functions aren't native, they have to be handled individually
